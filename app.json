@@ -48,9 +48,8 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "a6de6ed1-430e-4ab2-b407-fbbd79e3202a"
+        "projectId": "a503e6db-128f-44ee-96f6-8de687df7d4d"
       }
-    },
-    "owner": "not-manik"
+    }
   }
 }
