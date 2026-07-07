@@ -1,0 +1,26 @@
+/**
+ * {{MODULE}} Routes
+ *
+ * Responsibilities:
+ * - Register endpoints.
+ * - Attach middleware.
+ * - Attach schemas.
+ */
+
+import type { FastifyPluginAsync } from "fastify";
+import type { ZodTypeProvider } from "fastify-type-provider-zod";
+import { {{CLASS}}Controller } from "./{{MODULE}}.controller";
+import { {{CLASS}}Repository } from "./{{MODULE}}.repository";
+import { {{CLASS}}Service } from "./{{MODULE}}.service";
+
+const {{MODULE}}Routes: FastifyPluginAsync = async (fastify) => {
+  const repository = new {{CLASS}}Repository(fastify.prisma);
+  const service = new {{CLASS}}Service(repository);
+  const controller = new {{CLASS}}Controller(service);
+  const app = fastify.withTypeProvider<ZodTypeProvider>();
+
+  void app;
+  void controller;
+};
+
+export default {{MODULE}}Routes;

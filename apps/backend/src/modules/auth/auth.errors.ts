@@ -1,0 +1,53 @@
+/**
+ * auth Errors
+ *
+ * Module-specific error types and factories.
+ *
+ * Responsibilities:
+ * - Define typed error classes or error payloads.
+ * - Centralize module-specific failure cases.
+ * - Keep error messages consistent.
+ *
+ * Do NOT:
+ * - Throw errors from unrelated layers here.
+ * - Mix business logic into error definitions.
+ * - Duplicate generic errors that belong in shared packages.
+ */
+import ConflictError from "../../errors/conflict.error";
+import UnauthorizedError from "../../errors/unauthorized.error";
+import BadRequestError from "../../errors/bad-request.error";
+
+export class EmailAlreadyExistsError extends ConflictError {
+	constructor() {
+		super("Email is already registered", "AUTH_EMAIL_ALREADY_EXISTS");
+		this.name = "EmailAlreadyExistsError";
+	}
+}
+
+export class InvalidCredentialsError extends UnauthorizedError {
+	constructor() {
+		super("Invalid email or password", "AUTH_INVALID_CREDENTIALS");
+		this.name = "InvalidCredentialsError";
+	}
+}
+
+export class MissingRefreshTokenError extends UnauthorizedError {
+	constructor() {
+		super("Refresh token is required", "AUTH_REFRESH_TOKEN_REQUIRED");
+		this.name = "MissingRefreshTokenError";
+	}
+}
+
+export class InvalidRefreshTokenError extends UnauthorizedError {
+	constructor() {
+		super("Refresh token is invalid or expired", "AUTH_REFRESH_TOKEN_INVALID");
+		this.name = "InvalidRefreshTokenError";
+	}
+}
+
+export class InvalidEmailError extends BadRequestError {
+	constructor() {
+		super("Email is invalid", "AUTH_INVALID_EMAIL");
+		this.name = "InvalidEmailError";
+	}
+}

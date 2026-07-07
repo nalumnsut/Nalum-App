@@ -1,0 +1,11 @@
+/**
+ * Tests for {{MODULE}}.
+ */
+
+import { describe, expect, it } from "vitest";
+
+describe("{{CLASS}}", () => {
+  it("has a test scaffold", () => {
+    expect(true).toBe(true);
+  });
+});

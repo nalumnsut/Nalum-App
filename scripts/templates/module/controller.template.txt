@@ -1,0 +1,18 @@
+/**
+ * {{MODULE}} Controller
+ *
+ * Responsibilities:
+ * - Parse incoming requests.
+ * - Delegate work to the service layer.
+ * - Return HTTP responses.
+ *
+ * Do NOT:
+ * - Contain business logic.
+ * - Access the database.
+ * - Perform validation.
+ */
+import type { {{CLASS}}Service } from "./{{MODULE}}.service";
+
+export class {{CLASS}}Controller {
+  constructor(private readonly {{MODULE}}Service: {{CLASS}}Service) {}
+}

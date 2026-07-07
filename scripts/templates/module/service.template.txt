@@ -1,0 +1,18 @@
+/**
+ * {{MODULE}} Service
+ *
+ * Responsibilities:
+ * - Business logic.
+ * - Authorization.
+ * - Coordinate repositories.
+ *
+ * Do NOT:
+ * - Access req/res.
+ * - Return HTTP responses.
+ * - Query the database directly.
+ */
+import type { {{CLASS}}Repository } from "./{{MODULE}}.repository";
+
+export class {{CLASS}}Service {
+  constructor(private readonly {{MODULE}}Repository: {{CLASS}}Repository) {}
+}

@@ -1,0 +1,130 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider        = "prisma-client"
+  output          = "./generated"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  extensions = [citext, postgis, pg_trgm]
+}
+
+enum UserRole {
+  STUDENT
+  ALUMNI
+  ADMIN
+  PROFESSOR
+}
+
+enum Campus {
+  MAIN
+  EAST
+  WEST
+}
+
+enum AlumniVerificationStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+model User {
+  id                String    @id @default(uuid(7)) @db.Uuid
+  firstName         String
+  lastName          String
+  email             String    @unique @db.Citext
+  passwordHash      String
+  googleId          String?   @unique
+  role              UserRole
+  emailVerified     Boolean   @default(false)
+  emailVerifiedAt   DateTime?
+  verificationStatus AlumniVerificationStatus?
+  profileCompleted  Boolean   @default(false)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  // Relations
+  profile           Profile?
+  socialMedia       SocialMedia?
+  experiences       Experience[]
+  bans              UserBan[] @relation("UserBans")
+  bansIssued        UserBan[] @relation("BansIssuedByAdmin")
+  refreshTokens     RefreshToken[]
+  @@index([firstName])
+  @@index([lastName])
+}
+
+model RefreshToken {
+  id          String    @id @default(uuid(7)) @db.Uuid
+  userId      String    @db.Uuid
+  tokenHash   String    @unique
+  expiresAt   DateTime
+  revokedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt, revokedAt])
+}
+
+model Profile {
+  userId            String    @id @db.Uuid
+  batch             Int
+  branch            String
+  campus            Campus
+  city              String?
+  country           String?
+  latitude          Float?
+  longitude         Float?
+  location          Unsupported("geography(Point, 4326)")?
+  currentCompany    String?
+  currentRole       String?
+  profilePicture    String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  user              User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([campus, batch])
+  @@index([currentCompany])
+}
+
+model SocialMedia {
+  userId            String @id @db.Uuid
+  linkedin          String?
+  github            String?
+  twitter           String?
+  website           String?
+  user              User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Experience {
+  id                String    @id @default(uuid(7)) @db.Uuid
+  userId            String    @db.Uuid
+  company           String
+  role              String
+  startDate         DateTime?
+  endDate           DateTime?
+  isCurrent         Boolean   @default(false)
+  createdAt         DateTime  @default(now())
+  user              User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model UserBan {
+  id                String    @id @default(uuid(7)) @db.Uuid
+  userId            String    @db.Uuid
+  reason            String?
+  startsAt          DateTime  @default(now())
+  expiresAt         DateTime?
+  revokedAt         DateTime?
+  bannedById        String?   @db.Uuid
+  user              User @relation("UserBans", fields: [userId], references: [id], onDelete: Cascade)
+  bannedBy          User? @relation("BansIssuedByAdmin", fields: [bannedById], references: [id], onDelete: SetNull)
+  @@index([userId, expiresAt, revokedAt])
+  @@index([bannedById])
+}

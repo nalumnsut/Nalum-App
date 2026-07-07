@@ -1,0 +1,22 @@
+/**
+ * {{CLASS}} Middleware
+ *
+ * Responsibilities:
+ * - Inspect or enrich the request lifecycle.
+ * - Validate preconditions before handlers run.
+ * - Short-circuit unauthorized or invalid requests.
+ *
+ * Do NOT:
+ * - Implement route handlers.
+ * - Query the database directly.
+ * - Contain business logic that belongs in services.
+ */
+
+import type { FastifyReply, FastifyRequest } from "fastify";
+
+export async function {{CLASS}}Middleware(
+    request: FastifyRequest,
+    reply: FastifyReply,
+) {
+
+}

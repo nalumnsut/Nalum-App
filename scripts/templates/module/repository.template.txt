@@ -1,0 +1,16 @@
+/**
+ * {{MODULE}} Repository
+ *
+ * Responsibilities:
+ * - Database access.
+ * - Transactions.
+ * - Data persistence.
+ *
+ * Do NOT:
+ * - Implement business logic.
+ */
+import type { PrismaClient } from "../../database/prisma/generated/client";
+
+export class {{CLASS}}Repository {
+  constructor(private readonly prisma: PrismaClient) {}
+}
