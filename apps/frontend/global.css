@@ -1,0 +1,114 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Google Fonts Import (web) ─────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+
+/*
+  Google Sans Flex is served via Google Fonts as "Google Sans" or as a
+  variable font for Google Workspace apps. On web, use the closest available.
+  On native, fonts are loaded via expo-font in the root layout.
+*/
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&display=swap');
+
+/* ─── CSS Custom Properties (Light Mode) ────────────────────────────────── */
+:root {
+  /* Surfaces */
+  --color-surface: #fbf9f9;
+  --color-surface-dim: #dbdad9;
+  --color-surface-bright: #fbf9f9;
+  --color-surface-lowest: #ffffff;
+  --color-surface-low: #f5f3f3;
+  --color-surface-container: #efeded;
+  --color-surface-high: #e9e8e7;
+  --color-surface-highest: #e3e2e2;
+
+  /* Content */
+  --color-on-surface: #1b1c1c;
+  --color-on-surface-variant: #4c4546;
+  --color-inverse-surface: #303031;
+  --color-inverse-on-surface: #f2f0f0;
+
+  /* Structural */
+  --color-outline: #7e7576;
+  --color-outline-variant: #cfc4c5;
+
+  /* Primary */
+  --color-primary: #000000;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #1b1b1b;
+  --color-on-primary-container: #848484;
+
+  /* Secondary */
+  --color-secondary: #5d5f5f;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #dfe0e0;
+
+  /* Accent — Engineering Red (≤5% of UI) */
+  --color-accent: #ef4544;
+
+  /* Error */
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+
+  /* Background */
+  --color-background: #fbf9f9;
+  --color-on-background: #1b1c1c;
+
+  /* Typography */
+  --font-sans: 'GoogleSansFlex', 'Google Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrainsMono', 'JetBrains Mono', monospace;
+
+  /* Spacing (8pt grid) */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-canvas: 24px;
+  --spacing-gutter: 16px;
+}
+
+/* ─── CSS Custom Properties (Dark Mode) ─────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-surface: #0f0f0f;
+    --color-surface-dim: #1a1a1a;
+    --color-surface-bright: #141414;
+    --color-surface-lowest: #0a0a0a;
+    --color-surface-low: #141414;
+    --color-surface-container: #1e1e1e;
+    --color-surface-high: #242424;
+    --color-surface-highest: #2a2a2a;
+
+    --color-on-surface: #f0f0f0;
+    --color-on-surface-variant: #a0a0a0;
+    --color-inverse-surface: #f2f0f0;
+    --color-inverse-on-surface: #303031;
+
+    --color-outline: #4a4a4a;
+    --color-outline-variant: #2a2a2a;
+
+    --color-primary: #ffffff;
+    --color-on-primary: #000000;
+    --color-primary-container: #2a2a2a;
+    --color-on-primary-container: #c6c6c6;
+
+    --color-secondary: #c6c6c7;
+    --color-on-secondary: #1a1c1c;
+    --color-secondary-container: #2a2a2a;
+
+    /* Accent slightly brighter in dark mode */
+    --color-accent: #e53e3e;
+
+    --color-error: #ffb4ab;
+    --color-error-container: #93000a;
+
+    --color-background: #0a0a0a;
+    --color-on-background: #f0f0f0;
+
+    /* Dark mode border */
+    --color-border: #262626;
+  }
+}
