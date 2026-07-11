@@ -14,7 +14,7 @@ const user: UserWithPassword = {
 	id: "018f6b4f-4580-7000-8000-000000000001",
 	firstName: "Test",
 	lastName: "User",
-	email: "test@example.com",
+	email: "test@nsut.ac.in",
 	passwordHash: "",
 	googleId: null,
 	role: "STUDENT",
@@ -116,27 +116,27 @@ describe("AuthService", () => {
 		repository.findUserByEmail.mockResolvedValue(null);
 		repository.createUser.mockResolvedValue({
 			...user,
-			email: "google@example.com",
+			email: "google@nsut.ac.in",
 			passwordHash: null,
 			googleId: "google-subject",
 		});
 
 		const session = await service.loginWithGoogle({
 			sub: "google-subject",
-			email: "google@example.com",
+			email: "google@nsut.ac.in",
 			given_name: "Google",
 			family_name: "User",
 		});
 
 		expect(repository.createUser).toHaveBeenCalledWith(
 			expect.objectContaining({
-				email: "google@example.com",
+				email: "google@nsut.ac.in",
 				googleId: "google-subject",
 				passwordHash: null,
 				role: "STUDENT",
 			}),
 		);
-		expect(session.user.email).toBe("google@example.com");
+		expect(session.user.email).toBe("google@nsut.ac.in");
 		expect(session.accessTokenPayload.sub).toBe(user.id);
 	});
 

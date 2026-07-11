@@ -29,6 +29,10 @@ const authRoutes: FastifyPluginAsync = async (fastify) => {
 		"/register",
 		{
 			schema: {
+				summary: "Register a local account",
+				description:
+					"Creates a password-based account and returns access and refresh tokens.",
+				tags: ["Auth"],
 				body: schema.registerSchemaRequest,
 				response: {
 					201: schema.authResponseSchema,
@@ -42,6 +46,10 @@ const authRoutes: FastifyPluginAsync = async (fastify) => {
 		"/login",
 		{
 			schema: {
+				summary: "Log in with email and password",
+				description:
+					"Authenticates an existing password-based account and issues a new session.",
+				tags: ["Auth"],
 				body: schema.loginSchemaRequest,
 				response: {
 					200: schema.authResponseSchema,
@@ -55,6 +63,10 @@ const authRoutes: FastifyPluginAsync = async (fastify) => {
 		"/refresh",
 		{
 			schema: {
+				summary: "Refresh the access token",
+				description:
+					"Uses the refresh-token cookie to rotate the session and mint a new access token.",
+				tags: ["Auth"],
 				response: {
 					200: schema.authResponseSchema,
 				},
@@ -67,6 +79,10 @@ const authRoutes: FastifyPluginAsync = async (fastify) => {
 		"/logout",
 		{
 			schema: {
+				summary: "Log out the current session",
+				description:
+					"Revokes the refresh token cookie and ends the current session.",
+				tags: ["Auth"],
 				response: {
 					200: schema.logoutResponseSchema,
 				},
@@ -79,6 +95,10 @@ const authRoutes: FastifyPluginAsync = async (fastify) => {
 		"/google/callback",
 		{
 			schema: {
+				summary: "Complete Google sign-in",
+				description:
+					"Handles the Google OAuth callback, links or creates the account, and returns a session.",
+				tags: ["Auth", "Google"],
 				response: {
 					200: schema.authResponseSchema,
 				},

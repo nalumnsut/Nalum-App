@@ -37,7 +37,7 @@ model User {
   firstName         String
   lastName          String
   email             String    @unique @db.Citext
-  passwordHash      String
+  passwordHash      String?
   googleId          String?   @unique
   role              UserRole
   emailVerified     Boolean   @default(false)

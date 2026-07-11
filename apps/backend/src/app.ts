@@ -48,6 +48,7 @@ export const buildApp = async (options: FastifyServerOptions = {}) => {
 		openapi: {
 			info: {
 				title: "Nalum API",
+				description: "Backend API for auth, profiles, and platform features.",
 				version: "1.0.0",
 			},
 		},
@@ -59,6 +60,18 @@ export const buildApp = async (options: FastifyServerOptions = {}) => {
 	});
 
 	app.get("/api/health", async () => ({
+		schema: {
+			description: "Health check endpoint to verify that the API is running.",
+			tags: ["Health"],
+			response: {
+				200: {
+					type: "object",
+					properties: {
+						status: { type: "string", example: "OK" },
+					},
+				},
+			},
+		},
 		status: "OK",
 	}));
 

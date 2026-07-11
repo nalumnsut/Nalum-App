@@ -7,46 +7,144 @@
 import { z } from "zod/v4";
 
 const registerSchemaRequest = z.object({
-	role: z.enum(["STUDENT", "ALUMNI", "ADMIN", "PROFESSOR"]),
-	firstName: z.string().min(1, "First name is required"),
-	lastName: z.string().min(1, "Last name is required"),
-	email: z.email(),
-	password: z.string().min(6, "Password must be at least 6 characters long"),
-});
+	role: z
+		.enum(["STUDENT", "ALUMNI", "ADMIN", "PROFESSOR"])
+		.describe("Account role to create.")
+		.meta({ examples: ["STUDENT"] }),
+	firstName: z.string().min(1, "First name is required").describe("First name."),
+	lastName: z.string().min(1, "Last name is required").describe("Last name."),
+	email: z.email().describe("Email address used for the account."),
+	password: z
+		.string()
+		.min(6, "Password must be at least 6 characters long")
+		.describe("Password for the account."),
+})
+	.describe("Request body for creating a local account.")
+	.meta({
+		examples: [
+			{
+				role: "STUDENT",
+				firstName: "Aarav",
+				lastName: "Sharma",
+				email: "aarav@nsut.ac.in",
+				password: "password123",
+			},
+		],
+	});
 
 const loginSchemaRequest = z.object({
-	email: z.email(),
-	password: z.string().min(6, "Password must be at least 6 characters long"),
-});
+	email: z.email().describe("Email address for the existing account."),
+	password: z
+		.string()
+		.min(6, "Password must be at least 6 characters long")
+		.describe("Password for the account."),
+})
+	.describe("Request body for password login.")
+	.meta({
+		examples: [
+			{
+				email: "aarav@nsut.ac.in",
+				password: "password123",
+			},
+		],
+	});
 
 const userResponseSchema = z.object({
-	id: z.string(),
-	firstName: z.string(),
-	lastName: z.string(),
-	email: z.email(),
-	role: z.enum(["STUDENT", "ALUMNI", "ADMIN", "PROFESSOR"]),
-	emailVerified: z.boolean(),
-	profileCompleted: z.boolean(),
-	createdAt: z.date(),
-	updatedAt: z.date(),
-});
+	id: z.string().describe("Unique user id."),
+	firstName: z.string().describe("First name."),
+	lastName: z.string().describe("Last name."),
+	email: z.email().describe("Email address."),
+	role: z.enum(["STUDENT", "ALUMNI", "ADMIN", "PROFESSOR"]).describe("User role."),
+	emailVerified: z.boolean().describe("Whether the email has been verified."),
+	profileCompleted: z.boolean().describe("Whether the profile is complete."),
+	createdAt: z.date().describe("Account creation time."),
+	updatedAt: z.date().describe("Last update time."),
+})
+	.describe("Authenticated user payload.")
+	.meta({
+		examples: [
+			{
+				id: "usr_123",
+				firstName: "Aarav",
+				lastName: "Sharma",
+				email: "aarav@nsut.ac.in",
+				role: "STUDENT",
+				emailVerified: true,
+				profileCompleted: false,
+				createdAt: "2026-07-11T00:00:00.000Z",
+				updatedAt: "2026-07-11T00:00:00.000Z",
+			},
+		],
+	});
 
 const authDataSchema = z.object({
-	accessToken: z.string(),
+	accessToken: z.string().describe("JWT access token."),
 	user: userResponseSchema,
-});
+})
+	.describe("Authentication response payload.")
+	.meta({
+		examples: [
+			{
+				accessToken: "eyJhbGciOi...",
+				user: {
+					id: "usr_123",
+					firstName: "Aarav",
+					lastName: "Sharma",
+					email: "aarav@nsut.ac.in",
+					role: "STUDENT",
+					emailVerified: true,
+					profileCompleted: false,
+					createdAt: "2026-07-11T00:00:00.000Z",
+					updatedAt: "2026-07-11T00:00:00.000Z",
+				},
+			},
+		],
+	});
 
 const authResponseSchema = z.object({
-	success: z.literal(true),
-	message: z.string(),
+	success: z.literal(true).describe("Always true for successful authentication responses."),
+	message: z.string().describe("Human-readable success message."),
 	data: authDataSchema,
-});
+})
+	.describe("Standard authentication response envelope.")
+	.meta({
+		examples: [
+			{
+				success: true,
+				message: "Logged in successfully",
+				data: {
+					accessToken: "eyJhbGciOi...",
+					user: {
+						id: "usr_123",
+						firstName: "Aarav",
+						lastName: "Sharma",
+						email: "aarav@nsut.ac.in",
+						role: "STUDENT",
+						emailVerified: true,
+						profileCompleted: false,
+						createdAt: "2026-07-11T00:00:00.000Z",
+						updatedAt: "2026-07-11T00:00:00.000Z",
+					},
+				},
+			},
+		],
+	});
 
 const logoutResponseSchema = z.object({
-	success: z.literal(true),
-	message: z.string(),
-	data: z.null(),
-});
+	success: z.literal(true).describe("Always true for successful logout responses."),
+	message: z.string().describe("Human-readable success message."),
+	data: z.null().describe("No payload is returned."),
+})
+	.describe("Logout response envelope.")
+	.meta({
+		examples: [
+			{
+				success: true,
+				message: "Logged out successfully",
+				data: null,
+			},
+		],
+	});
 
 export {
 	authDataSchema,
