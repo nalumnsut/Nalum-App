@@ -72,12 +72,24 @@ export type CreateUserInput = {
 	firstName: string;
 	lastName: string;
 	email: string;
-	passwordHash: string;
+	passwordHash: string | null;
+	googleId?: string | null;
 	role: UserRole;
+	emailVerified?: boolean;
+	emailVerifiedAt?: Date | null;
 };
 
 export type CreateRefreshTokenInput = {
 	userId: string;
 	tokenHash: string;
 	expiresAt: Date;
+};
+
+export type EmailOtpRecord = {
+	id: string;
+	userId: string;
+	otpHash: string;
+	expiresAt: Date;
+	consumedAt: Date | null;
+	createdAt: Date;
 };

@@ -146,13 +146,28 @@ const logoutResponseSchema = z.object({
 		],
 	});
 
+const verifyEmailOtpSchemaRequest = z.object({
+	otp: z
+		.string()
+		.regex(/^\d{6}$/, "OTP must be a 6 digit code")
+		.describe("Six digit email verification OTP."),
+});
+
+const messageResponseSchema = z.object({
+	success: z.literal(true).describe("Indicates successful execution."),
+	message: z.string().describe("Human-readable response message."),
+	data: z.null().describe("No payload is returned."),
+});
+
 export {
 	authDataSchema,
 	authResponseSchema,
 	loginSchemaRequest,
 	logoutResponseSchema,
+	messageResponseSchema,
 	registerSchemaRequest,
 	userResponseSchema,
+	verifyEmailOtpSchemaRequest,
 };
 
 export type RegisterBody = z.infer<typeof registerSchemaRequest>;
@@ -160,3 +175,4 @@ export type LoginBody = z.infer<typeof loginSchemaRequest>;
 export type UserResponse = z.infer<typeof userResponseSchema>;
 export type AuthData = z.infer<typeof authDataSchema>;
 export type AuthResponseSchema = z.infer<typeof authResponseSchema>;
+export type VerifyEmailOtpBody = z.infer<typeof verifyEmailOtpSchemaRequest>;

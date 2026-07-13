@@ -65,6 +65,10 @@ export const mapError = (error: unknown): AppError => {
 			);
 		}
 
+		if (typedError.code === "FST_REQ_FILE_TOO_LARGE") {
+			return new BadRequestError("File is too large", "FILE_TOO_LARGE");
+		}
+
 		const message = normalizeMessage(
 			typedError.message,
 			internalServerError.message,

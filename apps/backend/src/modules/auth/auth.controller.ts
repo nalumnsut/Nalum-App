@@ -19,7 +19,7 @@ import {
 	REFRESH_TOKEN_COOKIE_PATH,
 } from "./auth.constants";
 import type { GoogleUserInfo } from "./auth.types";
-import type { LoginBody, RegisterBody } from "./auth.schema";
+import type { LoginBody, RegisterBody, VerifyEmailOtpBody } from "./auth.schema";
 import type { AuthService } from "./auth.service";
 import type { AccessTokenPayload, AuthSession } from "./auth.types";
 
@@ -54,6 +54,26 @@ export class AuthController {
 
 		this.clearRefreshCookie(reply);
 		return reply.success(null, "Logged out successfully");
+	};
+
+	sendEmailVerificationOtp = async (
+		request: FastifyRequest,
+		reply: FastifyReply,
+	) => {
+		await this.authService.sendEmailVerificationOtp(request.currentUser!);
+		return reply.success(null, "Email verification OTP sent");
+	};
+
+	verifyEmailOtp = async (
+		request: FastifyRequest,
+		reply: FastifyReply,
+	) => {
+		const body = request.body as VerifyEmailOtpBody;
+		await this.authService.verifyEmailOtp(
+			request.currentUser!,
+			body.otp,
+		);
+		return reply.success(null, "Email verified successfully");
 	};
 
 	googleCallback = async (request: FastifyRequest, reply: FastifyReply) => {

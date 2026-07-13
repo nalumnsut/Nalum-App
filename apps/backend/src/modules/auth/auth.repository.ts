@@ -13,11 +13,12 @@ import type { PrismaClient } from "../../database/prisma/generated/client";
 import type {
 	CreateRefreshTokenInput,
 	CreateUserInput,
+	EmailOtpRecord,
 	UserWithPassword,
 } from "./auth.types";
 
 export default class AuthRepository {
-	constructor(private readonly prisma: PrismaClient) {}
+	constructor(private readonly prisma: PrismaClient) { }
 
 	findUserByEmail(email: string) {
 		return this.prisma.user.findUnique({
@@ -48,6 +49,18 @@ export default class AuthRepository {
 			where: { id: userId },
 			data: {
 				googleId,
+				emailVerified: true,
+				emailVerifiedAt: new Date(),
+			},
+		});
+	}
+
+	updateUserEmailVerified(userId: string) {
+		return this.prisma.user.update({
+			where: { id: userId },
+			data: {
+				emailVerified: true,
+				emailVerifiedAt: new Date(),
 			},
 		});
 	}
@@ -95,6 +108,49 @@ export default class AuthRepository {
 		return this.prisma.refreshToken.update({
 			where: { id: token.id },
 			data: { revokedAt: new Date() },
+		});
+	}
+
+	async createEmailOtp(input: {
+		userId: string;
+		otpHash: string;
+		expiresAt: Date;
+	}): Promise<EmailOtpRecord> {
+		return this.prisma.$transaction(async (tx) => {
+			await tx.emailOtp.updateMany({
+				where: {
+					userId: input.userId,
+					consumedAt: null,
+				},
+				data: {
+					consumedAt: new Date(),
+				},
+			});
+
+			return tx.emailOtp.create({
+				data: input,
+			});
+		});
+	}
+
+	findLatestEmailOtp(userId: string): Promise<EmailOtpRecord | null> {
+		return this.prisma.emailOtp.findFirst({
+			where: {
+				userId,
+				consumedAt: null,
+			},
+			orderBy: {
+				createdAt: "desc",
+			},
+		});
+	}
+
+	consumeEmailOtp(id: string): Promise<EmailOtpRecord> {
+		return this.prisma.emailOtp.update({
+			where: { id },
+			data: {
+				consumedAt: new Date(),
+			},
 		});
 	}
 }

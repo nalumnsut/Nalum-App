@@ -220,6 +220,13 @@ export type IntFilter<$PrismaModel = never> = {
   not?: Prisma.NestedIntFilter<$PrismaModel> | number
 }
 
+export type EnumBranchFilter<$PrismaModel = never> = {
+  equals?: $Enums.Branch | Prisma.EnumBranchFieldRefInput<$PrismaModel>
+  in?: $Enums.Branch[] | Prisma.ListEnumBranchFieldRefInput<$PrismaModel>
+  notIn?: $Enums.Branch[] | Prisma.ListEnumBranchFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBranchFilter<$PrismaModel> | $Enums.Branch
+}
+
 export type EnumCampusFilter<$PrismaModel = never> = {
   equals?: $Enums.Campus | Prisma.EnumCampusFieldRefInput<$PrismaModel>
   in?: $Enums.Campus[] | Prisma.ListEnumCampusFieldRefInput<$PrismaModel>
@@ -252,6 +259,16 @@ export type IntWithAggregatesFilter<$PrismaModel = never> = {
   _sum?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedIntFilter<$PrismaModel>
   _max?: Prisma.NestedIntFilter<$PrismaModel>
+}
+
+export type EnumBranchWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.Branch | Prisma.EnumBranchFieldRefInput<$PrismaModel>
+  in?: $Enums.Branch[] | Prisma.ListEnumBranchFieldRefInput<$PrismaModel>
+  notIn?: $Enums.Branch[] | Prisma.ListEnumBranchFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBranchWithAggregatesFilter<$PrismaModel> | $Enums.Branch
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumBranchFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumBranchFilter<$PrismaModel>
 }
 
 export type EnumCampusWithAggregatesFilter<$PrismaModel = never> = {
@@ -513,6 +530,13 @@ export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedDateTimeFilter<$PrismaModel>
 }
 
+export type NestedEnumBranchFilter<$PrismaModel = never> = {
+  equals?: $Enums.Branch | Prisma.EnumBranchFieldRefInput<$PrismaModel>
+  in?: $Enums.Branch[] | Prisma.ListEnumBranchFieldRefInput<$PrismaModel>
+  notIn?: $Enums.Branch[] | Prisma.ListEnumBranchFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBranchFilter<$PrismaModel> | $Enums.Branch
+}
+
 export type NestedEnumCampusFilter<$PrismaModel = never> = {
   equals?: $Enums.Campus | Prisma.EnumCampusFieldRefInput<$PrismaModel>
   in?: $Enums.Campus[] | Prisma.ListEnumCampusFieldRefInput<$PrismaModel>
@@ -556,6 +580,16 @@ export type NestedFloatFilter<$PrismaModel = never> = {
   gt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
   gte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
   not?: Prisma.NestedFloatFilter<$PrismaModel> | number
+}
+
+export type NestedEnumBranchWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.Branch | Prisma.EnumBranchFieldRefInput<$PrismaModel>
+  in?: $Enums.Branch[] | Prisma.ListEnumBranchFieldRefInput<$PrismaModel>
+  notIn?: $Enums.Branch[] | Prisma.ListEnumBranchFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBranchWithAggregatesFilter<$PrismaModel> | $Enums.Branch
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumBranchFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumBranchFilter<$PrismaModel>
 }
 
 export type NestedEnumCampusWithAggregatesFilter<$PrismaModel = never> = {

@@ -386,6 +386,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 export const ModelName = {
   User: 'User',
   RefreshToken: 'RefreshToken',
+  EmailOtp: 'EmailOtp',
   Profile: 'Profile',
   SocialMedia: 'SocialMedia',
   Experience: 'Experience',
@@ -405,7 +406,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "refreshToken" | "profile" | "socialMedia" | "experience" | "userBan"
+    modelProps: "user" | "refreshToken" | "emailOtp" | "profile" | "socialMedia" | "experience" | "userBan"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -554,6 +555,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.RefreshTokenCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.RefreshTokenCountAggregateOutputType> | number
+        }
+      }
+    }
+    EmailOtp: {
+      payload: Prisma.$EmailOtpPayload<ExtArgs>
+      fields: Prisma.EmailOtpFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.EmailOtpFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailOtpPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.EmailOtpFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailOtpPayload>
+        }
+        findFirst: {
+          args: Prisma.EmailOtpFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailOtpPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.EmailOtpFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailOtpPayload>
+        }
+        findMany: {
+          args: Prisma.EmailOtpFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailOtpPayload>[]
+        }
+        create: {
+          args: Prisma.EmailOtpCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailOtpPayload>
+        }
+        createMany: {
+          args: Prisma.EmailOtpCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.EmailOtpCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailOtpPayload>[]
+        }
+        delete: {
+          args: Prisma.EmailOtpDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailOtpPayload>
+        }
+        update: {
+          args: Prisma.EmailOtpUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailOtpPayload>
+        }
+        deleteMany: {
+          args: Prisma.EmailOtpDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.EmailOtpUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.EmailOtpUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailOtpPayload>[]
+        }
+        upsert: {
+          args: Prisma.EmailOtpUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailOtpPayload>
+        }
+        aggregate: {
+          args: Prisma.EmailOtpAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateEmailOtp>
+        }
+        groupBy: {
+          args: Prisma.EmailOtpGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EmailOtpGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.EmailOtpCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EmailOtpCountAggregateOutputType> | number
         }
       }
     }
@@ -924,6 +999,18 @@ export const RefreshTokenScalarFieldEnum = {
 export type RefreshTokenScalarFieldEnum = (typeof RefreshTokenScalarFieldEnum)[keyof typeof RefreshTokenScalarFieldEnum]
 
 
+export const EmailOtpScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  otpHash: 'otpHash',
+  expiresAt: 'expiresAt',
+  consumedAt: 'consumedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type EmailOtpScalarFieldEnum = (typeof EmailOtpScalarFieldEnum)[keyof typeof EmailOtpScalarFieldEnum]
+
+
 export const ProfileScalarFieldEnum = {
   userId: 'userId',
   batch: 'batch',
@@ -1089,6 +1176,20 @@ export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
 
 
 /**
+ * Reference to a field of type 'Branch'
+ */
+export type EnumBranchFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Branch'>
+    
+
+
+/**
+ * Reference to a field of type 'Branch[]'
+ */
+export type ListEnumBranchFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Branch[]'>
+    
+
+
+/**
  * Reference to a field of type 'Campus'
  */
 export type EnumCampusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Campus'>
@@ -1227,6 +1328,7 @@ export type PrismaClientOptions = ({
 export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
   refreshToken?: Prisma.RefreshTokenOmit
+  emailOtp?: Prisma.EmailOtpOmit
   profile?: Prisma.ProfileOmit
   socialMedia?: Prisma.SocialMediaOmit
   experience?: Prisma.ExperienceOmit

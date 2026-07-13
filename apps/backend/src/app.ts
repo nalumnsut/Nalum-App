@@ -11,12 +11,14 @@ import {
 	serializerCompiler,
 	validatorCompiler,
 } from "fastify-type-provider-zod";
+import { z } from "zod/v4";
 import { env } from "./config/env.config";
 import { loggerOptions } from "./config/logger.config";
 import { registerModules } from "./modules";
 import errorPlugin from "./plugins/error.plugin";
 import prismaPlugin from "./plugins/prisma.plugin";
 import responsePlugin from "./plugins/response.plugin";
+import storagePlugin from "./plugins/storage.plugin";
 
 export const buildApp = async (options: FastifyServerOptions = {}) => {
 	const app = Fastify({
@@ -43,6 +45,7 @@ export const buildApp = async (options: FastifyServerOptions = {}) => {
 			expiresIn: env.JWT_EXPIRES_IN,
 		},
 	});
+	await app.register(storagePlugin);
 	await app.register(prismaPlugin);
 	await app.register(swagger, {
 		openapi: {
@@ -50,6 +53,15 @@ export const buildApp = async (options: FastifyServerOptions = {}) => {
 				title: "Nalum API",
 				description: "Backend API for auth, profiles, and platform features.",
 				version: "1.0.0",
+			},
+			components: {
+				securitySchemes: {
+					bearerAuth: {
+						type: "http",
+						scheme: "bearer",
+						bearerFormat: "JWT",
+					},
+				},
 			},
 		},
 		transform: jsonSchemaTransform,
@@ -59,21 +71,22 @@ export const buildApp = async (options: FastifyServerOptions = {}) => {
 		routePrefix: "/docs",
 	});
 
-	app.get("/api/health", async () => ({
-		schema: {
-			description: "Health check endpoint to verify that the API is running.",
-			tags: ["Health"],
-			response: {
-				200: {
-					type: "object",
-					properties: {
-						status: { type: "string", example: "OK" },
-					},
+	app.get(
+		"/api/health",
+		{
+			schema: {
+				summary: "Health check",
+				description: "Health check endpoint to verify that the API is running.",
+				tags: ["Health"],
+				response: {
+					200: z.object({
+						status: z.string(),
+					}),
 				},
 			},
 		},
-		status: "OK",
-	}));
+		async () => ({ status: "OK" }),
+	);
 
 	await app.register(registerModules);
 

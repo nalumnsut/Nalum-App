@@ -4,7 +4,7 @@ WORKDIR /app
 
 FROM base AS deps
 
-COPY package.json bun.lock tsconfig.json prisma.config.ts ./
+COPY package.json tsconfig.json prisma.config.ts ./
 
 RUN bun install
 
@@ -20,7 +20,6 @@ WORKDIR /app
 
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/package.json ./package.json
-COPY --from=build /app/bun.lock ./bun.lock
 COPY --from=build /app/tsconfig.json ./tsconfig.json
 COPY --from=build /app/prisma.config.ts ./prisma.config.ts
 COPY --from=build /app/src ./src

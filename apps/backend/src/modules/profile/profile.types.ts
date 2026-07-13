@@ -1,0 +1,16 @@
+/**
+ * profile Types
+ *
+ * Shared TypeScript types for the profile module.
+ *
+ * Responsibilities:
+ * - Define module-specific type aliases and interfaces.
+ * - Keep request and response DTO shapes reusable.
+ * - Export types shared across controllers, services, repositories, and routes.
+ *
+ * Do NOT:
+ * - Put runtime logic here.
+ * - Define validation schemas here.
+ * - Duplicate types that belong in shared packages.
+ */
+

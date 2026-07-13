@@ -6,6 +6,7 @@ import {
 	InvalidRefreshTokenError,
 } from "./auth.errors";
 import { type AuthRepositoryContract, AuthService } from "./auth.service";
+import type { IEmailService } from "./email.service";
 import type { UserWithPassword } from "./auth.types";
 
 const now = new Date();
@@ -34,10 +35,14 @@ const createRepository = (): MockAuthRepository =>
 		findUserByGoogleId: vi.fn(),
 		createUser: vi.fn(),
 		updateUserGoogleId: vi.fn(),
+		updateUserEmailVerified: vi.fn(),
 		createRefreshToken: vi.fn(),
 		findRefreshTokenByHash: vi.fn(),
 		rotateRefreshToken: vi.fn(),
 		revokeRefreshTokenByHash: vi.fn(),
+		createEmailOtp: vi.fn(),
+		findLatestEmailOtp: vi.fn(),
+		consumeEmailOtp: vi.fn(),
 	}) as MockAuthRepository;
 
 describe("AuthService", () => {
@@ -46,7 +51,10 @@ describe("AuthService", () => {
 
 	beforeEach(() => {
 		repository = createRepository();
-		service = new AuthService(repository);
+		const mockEmailService: IEmailService = {
+			sendEmailVerificationOtp: vi.fn().mockResolvedValue(undefined),
+		};
+		service = new AuthService(repository, mockEmailService);
 	});
 
 	it("rejects duplicate registration emails", async () => {

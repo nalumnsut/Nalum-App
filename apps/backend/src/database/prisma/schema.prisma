@@ -26,6 +26,21 @@ enum Campus {
   WEST
 }
 
+enum Branch {
+  CSE
+  ECE
+  MECH
+  CIVIL
+  CHEMICAL
+  BIOTECH
+  ELECTRICAL
+  INSTRUMENTATION
+  AEROSPACE
+  MATERIALS
+  INDUSTRIAL
+  PRODUCTION
+}
+
 enum AlumniVerificationStatus {
   PENDING
   VERIFIED
@@ -53,6 +68,7 @@ model User {
   bans              UserBan[] @relation("UserBans")
   bansIssued        UserBan[] @relation("BansIssuedByAdmin")
   refreshTokens     RefreshToken[]
+  emailOtps         EmailOtp[]
   @@index([firstName])
   @@index([lastName])
 }
@@ -71,10 +87,22 @@ model RefreshToken {
   @@index([expiresAt, revokedAt])
 }
 
+model EmailOtp {
+  id          String    @id @default(uuid(7)) @db.Uuid
+  userId      String    @db.Uuid
+  otpHash     String
+  expiresAt   DateTime
+  consumedAt  DateTime?
+  createdAt   DateTime  @default(now())
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, consumedAt, expiresAt])
+}
+
 model Profile {
   userId            String    @id @db.Uuid
   batch             Int
-  branch            String
+  branch            Branch
   campus            Campus
   city              String?
   country           String?

@@ -28,6 +28,24 @@ export const Campus = {
 export type Campus = (typeof Campus)[keyof typeof Campus]
 
 
+export const Branch = {
+  CSE: 'CSE',
+  ECE: 'ECE',
+  MECH: 'MECH',
+  CIVIL: 'CIVIL',
+  CHEMICAL: 'CHEMICAL',
+  BIOTECH: 'BIOTECH',
+  ELECTRICAL: 'ELECTRICAL',
+  INSTRUMENTATION: 'INSTRUMENTATION',
+  AEROSPACE: 'AEROSPACE',
+  MATERIALS: 'MATERIALS',
+  INDUSTRIAL: 'INDUSTRIAL',
+  PRODUCTION: 'PRODUCTION'
+} as const
+
+export type Branch = (typeof Branch)[keyof typeof Branch]
+
+
 export const AlumniVerificationStatus = {
   PENDING: 'PENDING',
   VERIFIED: 'VERIFIED',

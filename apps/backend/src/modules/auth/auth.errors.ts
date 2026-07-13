@@ -51,3 +51,17 @@ export class InvalidEmailError extends BadRequestError {
 		this.name = "InvalidEmailError";
 	}
 }
+
+export class EmailAlreadyVerifiedError extends ConflictError {
+	constructor() {
+		super("Email is already verified", "AUTH_EMAIL_ALREADY_VERIFIED");
+		this.name = "EmailAlreadyVerifiedError";
+	}
+}
+
+export class InvalidEmailOtpError extends BadRequestError {
+	constructor() {
+		super("OTP is invalid or expired", "AUTH_EMAIL_OTP_INVALID");
+		this.name = "InvalidEmailOtpError";
+	}
+}

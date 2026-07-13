@@ -22,6 +22,25 @@ const envSchema = z.object({
 	GOOGLE_CLIENT_SECRET: z.string(),
 	GOOGLE_CALLBACK_URL: z.url(),
 	GOOGLE_REDIRECT_URL: z.url(),
+	BREVO_SMTP_HOST: z.string().optional(),
+	BREVO_SMTP_PORT: z.coerce.number().optional(),
+	BREVO_SMTP_USER: z.string().optional(),
+	BREVO_SMTP_PASS: z.string().optional(),
+	BREVO_FROM_EMAIL: z.email().optional(),
+	BREVO_FROM_NAME: z.string().default("Nalum"),
+	S3_ENDPOINT: z.url().default("http://localhost:9000"),
+	S3_REGION: z.string().default("us-east-1"),
+	S3_ACCESS_KEY_ID: z.string().optional(),
+	S3_SECRET_ACCESS_KEY: z.string().optional(),
+	S3_BUCKET: z.string().min(1).default("nalum-uploads"),
+	S3_FORCE_PATH_STYLE: z
+		.preprocess((value) => {
+			if (value === undefined || value === "") return true;
+			if (value === "true") return true;
+			if (value === "false") return false;
+			return value;
+		}, z.boolean())
+		.default(true),
 });
 
 // Validate once during application startup.
@@ -33,6 +52,14 @@ if (!parseResult.success) {
 		"Invalid environment variables:",
 		z.treeifyError(parseResult.error),
 	);
+	process.exit(1);
+}
+
+if (
+	parseResult.data.NODE_ENV !== "test" &&
+	(!parseResult.data.S3_ACCESS_KEY_ID || !parseResult.data.S3_SECRET_ACCESS_KEY)
+) {
+	console.error("Invalid environment variables: S3 credentials are required");
 	process.exit(1);
 }
 

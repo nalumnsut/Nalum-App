@@ -14,12 +14,15 @@ import AuthRepository from "./auth.repository";
 import * as schema from "./auth.schema";
 import { AuthService } from "./auth.service";
 import oauthPlugin from "../../plugins/oauth.plugin";
+import { protect } from "../../middlewares/auth.middleware";
+import { EmailService } from "./email.service";
 
 
 
 const authRoutes: FastifyPluginAsync = async (fastify) => {
 	const repository = new AuthRepository(fastify.prisma);
-	const service = new AuthService(repository);
+	const emailService = new EmailService();
+	const service = new AuthService(repository, emailService);
 	const controller = new AuthController(service);
 	const app = fastify.withTypeProvider<ZodTypeProvider>();
 
@@ -89,6 +92,43 @@ const authRoutes: FastifyPluginAsync = async (fastify) => {
 			},
 		},
 		controller.logout,
+	);
+
+	app.post(
+		"/email-verification/send",
+		{
+			preHandler: protect,
+			schema: {
+				summary: "Send email verification OTP",
+				description:
+					"Sends a six digit OTP to the current user's email address.",
+				tags: ["Auth"],
+				security: [{ bearerAuth: [] }],
+				response: {
+					200: schema.messageResponseSchema,
+				},
+			},
+		},
+		controller.sendEmailVerificationOtp,
+	);
+
+	app.post(
+		"/email-verification/verify",
+		{
+			preHandler: protect,
+			schema: {
+				summary: "Verify email OTP",
+				description:
+					"Verifies the current user's email address using the OTP sent by email.",
+				tags: ["Auth"],
+				security: [{ bearerAuth: [] }],
+				body: schema.verifyEmailOtpSchemaRequest,
+				response: {
+					200: schema.messageResponseSchema,
+				},
+			},
+		},
+		controller.verifyEmailOtp,
 	);
 
 	app.get(

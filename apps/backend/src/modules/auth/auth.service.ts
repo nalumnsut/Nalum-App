@@ -11,7 +11,7 @@
  * - Return HTTP responses.
  * - Query the database directly.
  */
-import { createHash, randomBytes } from "node:crypto";
+import { createHash, randomBytes, randomInt } from "node:crypto";
 import { compare, hash } from "bcrypt";
 import { REFRESH_TOKEN_TTL_DAYS } from "./auth.constants";
 import {
@@ -20,7 +20,10 @@ import {
 	InvalidRefreshTokenError,
 	MissingRefreshTokenError,
 	InvalidEmailError,
+	EmailAlreadyVerifiedError,
+	InvalidEmailOtpError,
 } from "./auth.errors";
+import type { IEmailService } from "./email.service";
 import type { LoginBody, RegisterBody } from "./auth.schema";
 import type {
 	AccessTokenPayload,
@@ -28,12 +31,16 @@ import type {
 	AuthUser,
 	GoogleUserInfo,
 	CreateRefreshTokenInput,
+	EmailOtpRecord,
 	RefreshTokenRecord,
 	UserWithPassword,
 } from "./auth.types";
 
 export class AuthService {
-	constructor(private readonly repository: AuthRepositoryContract) {}
+	constructor(
+		private readonly repository: AuthRepositoryContract,
+		private readonly emailService: IEmailService,
+	) {}
 
 	async register(input: RegisterBody): Promise<AuthSession> {
 		if (!input.email.endsWith("@nsut.ac.in") && input.role === "STUDENT") {
@@ -97,9 +104,47 @@ export class AuthService {
 			passwordHash: null,
 			googleId: profile.sub,
 			role: Role,
+			emailVerified: true,
+			emailVerifiedAt: new Date(),
 		});
 
 		return this.createSession(user);
+	}
+
+	async sendEmailVerificationOtp(user: AuthUser) {
+		if (user.emailVerified) {
+			throw new EmailAlreadyVerifiedError();
+		}
+
+		const otp = this.generateEmailOtp();
+		const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
+		await this.repository.createEmailOtp({
+			userId: user.id,
+			otpHash: this.hashEmailOtp(otp),
+			expiresAt,
+		});
+
+		await this.emailService.sendEmailVerificationOtp({
+			to: user.email,
+			firstName: user.firstName,
+			otp,
+		});
+	}
+
+	async verifyEmailOtp(user: AuthUser, otp: string) {
+		if (user.emailVerified) {
+			throw new EmailAlreadyVerifiedError();
+		}
+
+		const emailOtp = await this.repository.findLatestEmailOtp(user.id);
+
+		if (!emailOtp || !this.isUsableEmailOtp(emailOtp, otp)) {
+			throw new InvalidEmailOtpError();
+		}
+
+		await this.repository.consumeEmailOtp(emailOtp.id);
+		await this.repository.updateUserEmailVerified(user.id);
 	}
 
 	async refresh(rawRefreshToken?: string): Promise<AuthSession> {
@@ -173,8 +218,16 @@ export class AuthService {
 		return randomBytes(64).toString("base64url");
 	}
 
+	private generateEmailOtp() {
+		return String(randomInt(100000, 1000000));
+	}
+
 	private hashRefreshToken(refreshToken: string) {
 		return createHash("sha256").update(refreshToken).digest("hex");
+	}
+
+	private hashEmailOtp(otp: string) {
+		return createHash("sha256").update(otp).digest("hex");
 	}
 
 	private getRefreshTokenExpiry(rememberMe: boolean = false) {
@@ -188,6 +241,14 @@ export class AuthService {
 	): token is RefreshTokenRecord {
 		return Boolean(
 			token && !token.revokedAt && token.expiresAt.getTime() > Date.now(),
+		);
+	}
+
+	private isUsableEmailOtp(token: EmailOtpRecord, otp: string) {
+		return (
+			token.consumedAt === null &&
+			token.expiresAt.getTime() > Date.now() &&
+			token.otpHash === this.hashEmailOtp(otp)
 		);
 	}
 
@@ -225,8 +286,11 @@ export interface AuthRepositoryContract {
 		passwordHash: string | null;
 		googleId?: string | null;
 		role: RegisterBody["role"];
+		emailVerified?: boolean;
+		emailVerifiedAt?: Date | null;
 	}): Promise<UserWithPassword>;
 	updateUserGoogleId(userId: string, googleId: string): Promise<UserWithPassword>;
+	updateUserEmailVerified(userId: string): Promise<UserWithPassword>;
 	createRefreshToken(input: CreateRefreshTokenInput): Promise<unknown>;
 	findRefreshTokenByHash(tokenHash: string): Promise<RefreshTokenRecord | null>;
 	rotateRefreshToken(
@@ -234,4 +298,11 @@ export interface AuthRepositoryContract {
 		nextToken: CreateRefreshTokenInput,
 	): Promise<unknown>;
 	revokeRefreshTokenByHash(tokenHash: string): Promise<unknown>;
+	createEmailOtp(input: {
+		userId: string;
+		otpHash: string;
+		expiresAt: Date;
+	}): Promise<EmailOtpRecord>;
+	findLatestEmailOtp(userId: string): Promise<EmailOtpRecord | null>;
+	consumeEmailOtp(id: string): Promise<EmailOtpRecord>;
 }

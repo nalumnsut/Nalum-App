@@ -41,7 +41,7 @@ export type ProfileSumAggregateOutputType = {
 export type ProfileMinAggregateOutputType = {
   userId: string | null
   batch: number | null
-  branch: string | null
+  branch: $Enums.Branch | null
   campus: $Enums.Campus | null
   city: string | null
   country: string | null
@@ -57,7 +57,7 @@ export type ProfileMinAggregateOutputType = {
 export type ProfileMaxAggregateOutputType = {
   userId: string | null
   batch: number | null
-  branch: string | null
+  branch: $Enums.Branch | null
   campus: $Enums.Campus | null
   city: string | null
   country: string | null
@@ -238,7 +238,7 @@ export type ProfileGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
 export type ProfileGroupByOutputType = {
   userId: string
   batch: number
-  branch: string
+  branch: $Enums.Branch
   campus: $Enums.Campus
   city: string | null
   country: string | null
@@ -277,7 +277,7 @@ export type ProfileWhereInput = {
   NOT?: Prisma.ProfileWhereInput | Prisma.ProfileWhereInput[]
   userId?: Prisma.UuidFilter<"Profile"> | string
   batch?: Prisma.IntFilter<"Profile"> | number
-  branch?: Prisma.StringFilter<"Profile"> | string
+  branch?: Prisma.EnumBranchFilter<"Profile"> | $Enums.Branch
   campus?: Prisma.EnumCampusFilter<"Profile"> | $Enums.Campus
   city?: Prisma.StringNullableFilter<"Profile"> | string | null
   country?: Prisma.StringNullableFilter<"Profile"> | string | null
@@ -314,7 +314,7 @@ export type ProfileWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.ProfileWhereInput[]
   NOT?: Prisma.ProfileWhereInput | Prisma.ProfileWhereInput[]
   batch?: Prisma.IntFilter<"Profile"> | number
-  branch?: Prisma.StringFilter<"Profile"> | string
+  branch?: Prisma.EnumBranchFilter<"Profile"> | $Enums.Branch
   campus?: Prisma.EnumCampusFilter<"Profile"> | $Enums.Campus
   city?: Prisma.StringNullableFilter<"Profile"> | string | null
   country?: Prisma.StringNullableFilter<"Profile"> | string | null
@@ -355,7 +355,7 @@ export type ProfileScalarWhereWithAggregatesInput = {
   NOT?: Prisma.ProfileScalarWhereWithAggregatesInput | Prisma.ProfileScalarWhereWithAggregatesInput[]
   userId?: Prisma.UuidWithAggregatesFilter<"Profile"> | string
   batch?: Prisma.IntWithAggregatesFilter<"Profile"> | number
-  branch?: Prisma.StringWithAggregatesFilter<"Profile"> | string
+  branch?: Prisma.EnumBranchWithAggregatesFilter<"Profile"> | $Enums.Branch
   campus?: Prisma.EnumCampusWithAggregatesFilter<"Profile"> | $Enums.Campus
   city?: Prisma.StringNullableWithAggregatesFilter<"Profile"> | string | null
   country?: Prisma.StringNullableWithAggregatesFilter<"Profile"> | string | null
@@ -370,7 +370,7 @@ export type ProfileScalarWhereWithAggregatesInput = {
 
 export type ProfileCreateInput = {
   batch: number
-  branch: string
+  branch: $Enums.Branch
   campus: $Enums.Campus
   city?: string | null
   country?: string | null
@@ -387,7 +387,7 @@ export type ProfileCreateInput = {
 export type ProfileUncheckedCreateInput = {
   userId: string
   batch: number
-  branch: string
+  branch: $Enums.Branch
   campus: $Enums.Campus
   city?: string | null
   country?: string | null
@@ -402,7 +402,7 @@ export type ProfileUncheckedCreateInput = {
 
 export type ProfileUpdateInput = {
   batch?: Prisma.IntFieldUpdateOperationsInput | number
-  branch?: Prisma.StringFieldUpdateOperationsInput | string
+  branch?: Prisma.EnumBranchFieldUpdateOperationsInput | $Enums.Branch
   campus?: Prisma.EnumCampusFieldUpdateOperationsInput | $Enums.Campus
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -419,7 +419,7 @@ export type ProfileUpdateInput = {
 export type ProfileUncheckedUpdateInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   batch?: Prisma.IntFieldUpdateOperationsInput | number
-  branch?: Prisma.StringFieldUpdateOperationsInput | string
+  branch?: Prisma.EnumBranchFieldUpdateOperationsInput | $Enums.Branch
   campus?: Prisma.EnumCampusFieldUpdateOperationsInput | $Enums.Campus
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -435,7 +435,7 @@ export type ProfileUncheckedUpdateInput = {
 export type ProfileCreateManyInput = {
   userId: string
   batch: number
-  branch: string
+  branch: $Enums.Branch
   campus: $Enums.Campus
   city?: string | null
   country?: string | null
@@ -450,7 +450,7 @@ export type ProfileCreateManyInput = {
 
 export type ProfileUpdateManyMutationInput = {
   batch?: Prisma.IntFieldUpdateOperationsInput | number
-  branch?: Prisma.StringFieldUpdateOperationsInput | string
+  branch?: Prisma.EnumBranchFieldUpdateOperationsInput | $Enums.Branch
   campus?: Prisma.EnumCampusFieldUpdateOperationsInput | $Enums.Campus
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -466,7 +466,7 @@ export type ProfileUpdateManyMutationInput = {
 export type ProfileUncheckedUpdateManyInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   batch?: Prisma.IntFieldUpdateOperationsInput | number
-  branch?: Prisma.StringFieldUpdateOperationsInput | string
+  branch?: Prisma.EnumBranchFieldUpdateOperationsInput | $Enums.Branch
   campus?: Prisma.EnumCampusFieldUpdateOperationsInput | $Enums.Campus
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -584,6 +584,10 @@ export type IntFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type EnumBranchFieldUpdateOperationsInput = {
+  set?: $Enums.Branch
+}
+
 export type EnumCampusFieldUpdateOperationsInput = {
   set?: $Enums.Campus
 }
@@ -598,7 +602,7 @@ export type NullableFloatFieldUpdateOperationsInput = {
 
 export type ProfileCreateWithoutUserInput = {
   batch: number
-  branch: string
+  branch: $Enums.Branch
   campus: $Enums.Campus
   city?: string | null
   country?: string | null
@@ -613,7 +617,7 @@ export type ProfileCreateWithoutUserInput = {
 
 export type ProfileUncheckedCreateWithoutUserInput = {
   batch: number
-  branch: string
+  branch: $Enums.Branch
   campus: $Enums.Campus
   city?: string | null
   country?: string | null
@@ -644,7 +648,7 @@ export type ProfileUpdateToOneWithWhereWithoutUserInput = {
 
 export type ProfileUpdateWithoutUserInput = {
   batch?: Prisma.IntFieldUpdateOperationsInput | number
-  branch?: Prisma.StringFieldUpdateOperationsInput | string
+  branch?: Prisma.EnumBranchFieldUpdateOperationsInput | $Enums.Branch
   campus?: Prisma.EnumCampusFieldUpdateOperationsInput | $Enums.Campus
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -659,7 +663,7 @@ export type ProfileUpdateWithoutUserInput = {
 
 export type ProfileUncheckedUpdateWithoutUserInput = {
   batch?: Prisma.IntFieldUpdateOperationsInput | number
-  branch?: Prisma.StringFieldUpdateOperationsInput | string
+  branch?: Prisma.EnumBranchFieldUpdateOperationsInput | $Enums.Branch
   campus?: Prisma.EnumCampusFieldUpdateOperationsInput | $Enums.Campus
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -760,7 +764,7 @@ export type $ProfilePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     userId: string
     batch: number
-    branch: string
+    branch: $Enums.Branch
     campus: $Enums.Campus
     city: string | null
     country: string | null
@@ -1197,7 +1201,7 @@ export interface Prisma__ProfileClient<T, Null = never, ExtArgs extends runtime.
 export interface ProfileFieldRefs {
   readonly userId: Prisma.FieldRef<"Profile", 'String'>
   readonly batch: Prisma.FieldRef<"Profile", 'Int'>
-  readonly branch: Prisma.FieldRef<"Profile", 'String'>
+  readonly branch: Prisma.FieldRef<"Profile", 'Branch'>
   readonly campus: Prisma.FieldRef<"Profile", 'Campus'>
   readonly city: Prisma.FieldRef<"Profile", 'String'>
   readonly country: Prisma.FieldRef<"Profile", 'String'>

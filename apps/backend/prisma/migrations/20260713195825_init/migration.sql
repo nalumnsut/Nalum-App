@@ -14,6 +14,9 @@ CREATE TYPE "UserRole" AS ENUM ('STUDENT', 'ALUMNI', 'ADMIN', 'PROFESSOR');
 CREATE TYPE "Campus" AS ENUM ('MAIN', 'EAST', 'WEST');
 
 -- CreateEnum
+CREATE TYPE "Branch" AS ENUM ('CSE', 'ECE', 'MECH', 'CIVIL', 'CHEMICAL', 'BIOTECH', 'ELECTRICAL', 'INSTRUMENTATION', 'AEROSPACE', 'MATERIALS', 'INDUSTRIAL', 'PRODUCTION');
+
+-- CreateEnum
 CREATE TYPE "AlumniVerificationStatus" AS ENUM ('PENDING', 'VERIFIED', 'REJECTED');
 
 -- CreateTable
@@ -22,7 +25,7 @@ CREATE TABLE "User" (
     "firstName" TEXT NOT NULL,
     "lastName" TEXT NOT NULL,
     "email" CITEXT NOT NULL,
-    "passwordHash" TEXT NOT NULL,
+    "passwordHash" TEXT,
     "googleId" TEXT,
     "role" "UserRole" NOT NULL,
     "emailVerified" BOOLEAN NOT NULL DEFAULT false,
@@ -49,10 +52,22 @@ CREATE TABLE "RefreshToken" (
 );
 
 -- CreateTable
+CREATE TABLE "EmailOtp" (
+    "id" UUID NOT NULL,
+    "userId" UUID NOT NULL,
+    "otpHash" TEXT NOT NULL,
+    "expiresAt" TIMESTAMP(3) NOT NULL,
+    "consumedAt" TIMESTAMP(3),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "EmailOtp_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Profile" (
     "userId" UUID NOT NULL,
     "batch" INTEGER NOT NULL,
-    "branch" TEXT NOT NULL,
+    "branch" "Branch" NOT NULL,
     "campus" "Campus" NOT NULL,
     "city" TEXT,
     "country" TEXT,
@@ -128,6 +143,9 @@ CREATE INDEX "RefreshToken_userId_idx" ON "RefreshToken"("userId");
 CREATE INDEX "RefreshToken_expiresAt_revokedAt_idx" ON "RefreshToken"("expiresAt", "revokedAt");
 
 -- CreateIndex
+CREATE INDEX "EmailOtp_userId_consumedAt_expiresAt_idx" ON "EmailOtp"("userId", "consumedAt", "expiresAt");
+
+-- CreateIndex
 CREATE INDEX "Profile_campus_batch_idx" ON "Profile"("campus", "batch");
 
 -- CreateIndex
@@ -144,6 +162,9 @@ CREATE INDEX "UserBan_bannedById_idx" ON "UserBan"("bannedById");
 
 -- AddForeignKey
 ALTER TABLE "RefreshToken" ADD CONSTRAINT "RefreshToken_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "EmailOtp" ADD CONSTRAINT "EmailOtp_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Profile" ADD CONSTRAINT "Profile_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
