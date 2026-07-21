@@ -19,6 +19,7 @@ import errorPlugin from "./plugins/error.plugin";
 import prismaPlugin from "./plugins/prisma.plugin";
 import responsePlugin from "./plugins/response.plugin";
 import storagePlugin from "./plugins/storage.plugin";
+import { closeEmailQueue } from "./queues/email.queue";
 
 export const buildApp = async (options: FastifyServerOptions = {}) => {
 	const app = Fastify({
@@ -89,6 +90,10 @@ export const buildApp = async (options: FastifyServerOptions = {}) => {
 	);
 
 	await app.register(registerModules);
+
+	app.addHook("onClose", async () => {
+		await closeEmailQueue();
+	});
 
 	return app;
 };

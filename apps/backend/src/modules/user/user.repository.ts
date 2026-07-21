@@ -1,5 +1,7 @@
-import type { PrismaClient } from "../../database/prisma/generated/client";
-import { Prisma } from "../../database/prisma/generated/client";
+import type {
+	Prisma,
+	PrismaClient,
+} from "../../database/prisma/generated/client";
 import type { SearchUsersFilters, UserDetailsRecord } from "./user.types";
 
 const userDetailsInclude = {
@@ -61,8 +63,10 @@ export class UserRepository {
 		if (filters.profileCompleted !== undefined) {
 			and.push({ profileCompleted: filters.profileCompleted });
 		}
-		if (filters.campus) and.push({ profile: { is: { campus: filters.campus } } });
-		if (filters.branch) and.push({ profile: { is: { branch: filters.branch } } });
+		if (filters.campus)
+			and.push({ profile: { is: { campus: filters.campus } } });
+		if (filters.branch)
+			and.push({ profile: { is: { branch: filters.branch } } });
 		if (filters.batch) and.push({ profile: { is: { batch: filters.batch } } });
 		if (filters.city) {
 			and.push({ profile: { is: { city: { contains: filters.city } } } });

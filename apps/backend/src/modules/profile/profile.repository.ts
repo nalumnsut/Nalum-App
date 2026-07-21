@@ -7,7 +7,9 @@ import type {
 	SocialMedia,
 } from "../../database/prisma/generated/client";
 
-type ProfileUpdateData = Partial<Omit<Profile, "userId" | "createdAt" | "updatedAt">>;
+type ProfileUpdateData = Partial<
+	Omit<Profile, "userId" | "createdAt" | "updatedAt">
+>;
 type SocialMediaUpdateData = Partial<Omit<SocialMedia, "userId">>;
 type ExperienceUpdateData = Omit<Experience, "id" | "userId" | "createdAt">;
 
@@ -22,7 +24,7 @@ export class ProfileRepository {
 
 	async createProfile(
 		userId: string,
-		data: { batch: number; branch: Branch; campus: Campus }
+		data: { batch: number; branch: Branch; campus: Campus },
 	): Promise<Profile> {
 		return this.prisma.$transaction(async (tx) => {
 			const profile = await tx.profile.create({

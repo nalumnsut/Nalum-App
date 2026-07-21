@@ -14,10 +14,7 @@ export type UserDetailsRecord = User & {
 	experiences: Experience[];
 };
 
-export type PublicUserDetails = Omit<
-	User,
-	"passwordHash" | "googleId"
-> & {
+export type PublicUserDetails = Omit<User, "passwordHash" | "googleId"> & {
 	profile: Profile | null;
 	socialMedia: SocialMedia | null;
 	experiences: Experience[];

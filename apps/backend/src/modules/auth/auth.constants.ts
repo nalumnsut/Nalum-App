@@ -25,4 +25,8 @@ export const REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
 
 export const REFRESH_TOKEN_COOKIE_PATH = "/api/auth";
 
+export const DEVICE_ID_COOKIE_NAME = "deviceId";
+
+export const DEVICE_ID_COOKIE_PATH = "/";
+
 export const REFRESH_TOKEN_TTL_DAYS = 30;

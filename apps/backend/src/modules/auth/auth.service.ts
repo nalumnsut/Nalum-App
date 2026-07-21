@@ -12,29 +12,29 @@
  * - Query the database directly.
  */
 import { createHash, randomBytes, randomInt } from "node:crypto";
-import { compare, hash } from "bcrypt";
+import argon2 from "argon2";
 import { REFRESH_TOKEN_TTL_DAYS } from "./auth.constants";
 import {
 	EmailAlreadyExistsError,
+	EmailAlreadyVerifiedError,
 	InvalidCredentialsError,
+	InvalidEmailError,
+	InvalidEmailOtpError,
 	InvalidRefreshTokenError,
 	MissingRefreshTokenError,
-	InvalidEmailError,
-	EmailAlreadyVerifiedError,
-	InvalidEmailOtpError,
 } from "./auth.errors";
-import type { IEmailService } from "./email.service";
 import type { LoginBody, RegisterBody } from "./auth.schema";
 import type {
 	AccessTokenPayload,
 	AuthSession,
 	AuthUser,
-	GoogleUserInfo,
 	CreateRefreshTokenInput,
 	EmailOtpRecord,
+	GoogleUserInfo,
 	RefreshTokenRecord,
 	UserWithPassword,
 } from "./auth.types";
+import type { IEmailService } from "../email";
 
 export class AuthService {
 	constructor(
@@ -42,7 +42,10 @@ export class AuthService {
 		private readonly emailService: IEmailService,
 	) {}
 
-	async register(input: RegisterBody): Promise<AuthSession> {
+	async register(
+		input: RegisterBody,
+		device: AuthDevice = DEFAULT_AUTH_DEVICE,
+	): Promise<AuthSession> {
 		if (!input.email.endsWith("@nsut.ac.in") && input.role === "STUDENT") {
 			throw new InvalidEmailError();
 		}
@@ -52,7 +55,7 @@ export class AuthService {
 			throw new EmailAlreadyExistsError();
 		}
 
-		const passwordHash = await hash(input.password, 12);
+		const passwordHash = await this.hashPassword(input.password);
 		const user = await this.repository.createUser({
 			firstName: input.firstName,
 			lastName: input.lastName,
@@ -61,29 +64,43 @@ export class AuthService {
 			role: input.role,
 		});
 
-		return this.createSession(user);
+		return this.createSession(user, device);
 	}
 
-	async login(input: LoginBody): Promise<AuthSession> {
+	async login(
+		input: LoginBody,
+		device: AuthDevice = DEFAULT_AUTH_DEVICE,
+	): Promise<AuthSession> {
 		const user = await this.repository.findUserByEmail(input.email);
 
-		if (!user || !user.passwordHash) {
+		if (!user?.passwordHash) {
 			throw new InvalidCredentialsError();
 		}
 
-		const passwordMatches = await compare(input.password, user.passwordHash);
+		const passwordMatches = await this.verifyPassword(input.password, user.passwordHash);
 
 		if (!passwordMatches) {
 			throw new InvalidCredentialsError();
 		}
-		return this.createSession(user);
+		if (this.isLegacyBcryptHash(user.passwordHash)) {
+			await this.repository.updatePasswordHash(
+				user.id,
+				await this.hashPassword(input.password),
+			);
+		}
+		return this.createSession(user, device);
 	}
 
-	async loginWithGoogle(profile: GoogleUserInfo): Promise<AuthSession> {
-		const userByGoogleId = await this.repository.findUserByGoogleId(profile.sub);
+	async loginWithGoogle(
+		profile: GoogleUserInfo,
+		device: AuthDevice = DEFAULT_AUTH_DEVICE,
+	): Promise<AuthSession> {
+		const userByGoogleId = await this.repository.findUserByGoogleId(
+			profile.sub,
+		);
 
 		if (userByGoogleId) {
-			return this.createSession(userByGoogleId);
+			return this.createSession(userByGoogleId, device);
 		}
 
 		const userByEmail = await this.repository.findUserByEmail(profile.email);
@@ -94,9 +111,9 @@ export class AuthService {
 				profile.sub,
 			);
 
-			return this.createSession(linkedUser);
+			return this.createSession(linkedUser, device);
 		}
-		const Role = profile.email.endsWith("@nsut.ac.in") ? "STUDENT" : "ALUMNI"; 
+		const Role = profile.email.endsWith("@nsut.ac.in") ? "STUDENT" : "ALUMNI";
 		const user = await this.repository.createUser({
 			firstName: this.getGoogleFirstName(profile),
 			lastName: this.getGoogleLastName(profile),
@@ -108,7 +125,7 @@ export class AuthService {
 			emailVerifiedAt: new Date(),
 		});
 
-		return this.createSession(user);
+		return this.createSession(user, device);
 	}
 
 	async sendEmailVerificationOtp(user: AuthUser) {
@@ -147,7 +164,10 @@ export class AuthService {
 		await this.repository.updateUserEmailVerified(user.id);
 	}
 
-	async refresh(rawRefreshToken?: string): Promise<AuthSession> {
+	async refresh(
+		rawRefreshToken: string | undefined,
+		device: AuthDevice = DEFAULT_AUTH_DEVICE,
+	): Promise<AuthSession> {
 		if (!rawRefreshToken) {
 			throw new MissingRefreshTokenError();
 		}
@@ -166,6 +186,8 @@ export class AuthService {
 		await this.repository.rotateRefreshToken(currentToken.id, {
 			userId: currentToken.userId,
 			tokenHash: this.hashRefreshToken(nextRefreshToken),
+			deviceId: device.id,
+			deviceName: device.name,
 			expiresAt: nextRefreshTokenExpiresAt,
 		});
 
@@ -187,13 +209,26 @@ export class AuthService {
 		);
 	}
 
-	private async createSession(user: UserWithPassword): Promise<AuthSession> {
+	listSessions(userId: string) {
+		return this.repository.findActiveSessions(userId);
+	}
+
+	async revokeSession(userId: string, sessionId: string) {
+		await this.repository.revokeSession(userId, sessionId);
+	}
+
+	private async createSession(
+		user: UserWithPassword,
+		device: AuthDevice,
+	): Promise<AuthSession> {
 		const refreshToken = this.generateRefreshToken();
 		const refreshTokenExpiresAt = this.getRefreshTokenExpiry();
 
 		await this.repository.createRefreshToken({
 			userId: user.id,
 			tokenHash: this.hashRefreshToken(refreshToken),
+			deviceId: device.id,
+			deviceName: device.name,
 			expiresAt: refreshTokenExpiresAt,
 		});
 
@@ -230,9 +265,34 @@ export class AuthService {
 		return createHash("sha256").update(otp).digest("hex");
 	}
 
+	private hashPassword(password: string) {
+		return argon2.hash(password, { type: argon2.argon2id });
+	}
+
+	private async verifyPassword(password: string, passwordHash: string) {
+		if (!this.isArgon2idHash(passwordHash) && !this.isLegacyBcryptHash(passwordHash)) {
+			return false;
+		}
+		try {
+			return await argon2.verify(passwordHash, password);
+		} catch {
+			return false;
+		}
+	}
+
+	private isArgon2idHash(passwordHash: string) {
+		return passwordHash.startsWith("$argon2id$");
+	}
+
+	private isLegacyBcryptHash(passwordHash: string) {
+		return /^\$2[aby]\$/.test(passwordHash);
+	}
+
 	private getRefreshTokenExpiry(rememberMe: boolean = false) {
 		const expiresAt = new Date();
-		expiresAt.setDate(expiresAt.getDate() + (rememberMe ? REFRESH_TOKEN_TTL_DAYS : 1));
+		expiresAt.setDate(
+			expiresAt.getDate() + (rememberMe ? REFRESH_TOKEN_TTL_DAYS : 1),
+		);
 		return expiresAt;
 	}
 
@@ -272,7 +332,11 @@ export class AuthService {
 	}
 
 	private getGoogleLastName(profile: GoogleUserInfo) {
-		return profile.family_name ?? profile.name?.split(" ").slice(1).join(" ") ?? "User";
+		return (
+			profile.family_name ??
+			profile.name?.split(" ").slice(1).join(" ") ??
+			"User"
+		);
 	}
 }
 
@@ -289,8 +353,12 @@ export interface AuthRepositoryContract {
 		emailVerified?: boolean;
 		emailVerifiedAt?: Date | null;
 	}): Promise<UserWithPassword>;
-	updateUserGoogleId(userId: string, googleId: string): Promise<UserWithPassword>;
+	updateUserGoogleId(
+		userId: string,
+		googleId: string,
+	): Promise<UserWithPassword>;
 	updateUserEmailVerified(userId: string): Promise<UserWithPassword>;
+	updatePasswordHash(userId: string, passwordHash: string): Promise<unknown>;
 	createRefreshToken(input: CreateRefreshTokenInput): Promise<unknown>;
 	findRefreshTokenByHash(tokenHash: string): Promise<RefreshTokenRecord | null>;
 	rotateRefreshToken(
@@ -298,6 +366,8 @@ export interface AuthRepositoryContract {
 		nextToken: CreateRefreshTokenInput,
 	): Promise<unknown>;
 	revokeRefreshTokenByHash(tokenHash: string): Promise<unknown>;
+	findActiveSessions(userId: string): Promise<unknown>;
+	revokeSession(userId: string, sessionId: string): Promise<unknown>;
 	createEmailOtp(input: {
 		userId: string;
 		otpHash: string;
@@ -306,3 +376,10 @@ export interface AuthRepositoryContract {
 	findLatestEmailOtp(userId: string): Promise<EmailOtpRecord | null>;
 	consumeEmailOtp(id: string): Promise<EmailOtpRecord>;
 }
+
+export type AuthDevice = {
+	id: string;
+	name: string | null;
+};
+
+const DEFAULT_AUTH_DEVICE: AuthDevice = { id: "legacy", name: null };

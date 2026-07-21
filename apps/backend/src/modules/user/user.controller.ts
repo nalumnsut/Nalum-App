@@ -10,10 +10,7 @@ export class UserController {
 		return reply.success(user, "User profile retrieved successfully");
 	};
 
-	searchUsers = async (
-		request: FastifyRequest,
-		reply: FastifyReply,
-	) => {
+	searchUsers = async (request: FastifyRequest, reply: FastifyReply) => {
 		const result = await this.userService.searchUsers(
 			request.query as SearchUsersQuery,
 		);

@@ -18,7 +18,7 @@ import type {
 } from "./auth.types";
 
 export default class AuthRepository {
-	constructor(private readonly prisma: PrismaClient) { }
+	constructor(private readonly prisma: PrismaClient) {}
 
 	findUserByEmail(email: string) {
 		return this.prisma.user.findUnique({
@@ -27,9 +27,11 @@ export default class AuthRepository {
 	}
 
 	findUserByGoogleId(googleId: string) {
-		return this.prisma
-			.$queryRaw<UserWithPassword[]>`SELECT * FROM "User" WHERE "googleId" = ${googleId} LIMIT 1`
-			.then((users) => users[0] ?? null);
+		return this.prisma.$queryRaw<
+			UserWithPassword[]
+		>`SELECT * FROM "User" WHERE "googleId" = ${googleId} LIMIT 1`.then(
+			(users) => users[0] ?? null,
+		);
 	}
 
 	findUserById(id: string) {
@@ -65,6 +67,13 @@ export default class AuthRepository {
 		});
 	}
 
+	updatePasswordHash(userId: string, passwordHash: string) {
+		return this.prisma.user.update({
+			where: { id: userId },
+			data: { passwordHash },
+		});
+	}
+
 	createRefreshToken(input: CreateRefreshTokenInput) {
 		return this.prisma.refreshToken.create({
 			data: input,
@@ -85,13 +94,15 @@ export default class AuthRepository {
 		nextToken: CreateRefreshTokenInput,
 	) {
 		return this.prisma.$transaction(async (tx) => {
-			await tx.refreshToken.update({
+			return tx.refreshToken.update({
 				where: { id: currentTokenId },
-				data: { revokedAt: new Date() },
-			});
-
-			return tx.refreshToken.create({
-				data: nextToken,
+				data: {
+					tokenHash: nextToken.tokenHash,
+					deviceId: nextToken.deviceId,
+					deviceName: nextToken.deviceName,
+					expiresAt: nextToken.expiresAt,
+					lastUsedAt: new Date(),
+				},
 			});
 		});
 	}
@@ -107,6 +118,32 @@ export default class AuthRepository {
 
 		return this.prisma.refreshToken.update({
 			where: { id: token.id },
+			data: { revokedAt: new Date() },
+		});
+	}
+
+	findActiveSessions(userId: string) {
+		return this.prisma.refreshToken.findMany({
+			where: {
+				userId,
+				revokedAt: null,
+				expiresAt: { gt: new Date() },
+			},
+			select: {
+				id: true,
+				deviceId: true,
+				deviceName: true,
+				lastUsedAt: true,
+				createdAt: true,
+				expiresAt: true,
+			},
+			orderBy: { lastUsedAt: "desc" },
+		});
+	}
+
+	revokeSession(userId: string, sessionId: string) {
+		return this.prisma.refreshToken.updateMany({
+			where: { id: sessionId, userId, revokedAt: null },
 			data: { revokedAt: new Date() },
 		});
 	}

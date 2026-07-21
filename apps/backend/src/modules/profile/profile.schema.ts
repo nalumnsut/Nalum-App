@@ -33,7 +33,7 @@ export const editProfileSchemaRequest = z.object({
 	batch: z
 		.preprocess(
 			(val) => (typeof val === "string" ? parseInt(val, 10) : val),
-			z.number().int().min(1900).max(2100)
+			z.number().int().min(1900).max(2100),
 		)
 		.optional()
 		.describe("Updated batch year."),
@@ -69,7 +69,10 @@ export const profileDataSchema = z.object({
 	country: z.string().nullable().describe("Current country."),
 	currentCompany: z.string().nullable().describe("Current company name."),
 	currentRole: z.string().nullable().describe("Current job role."),
-	profilePicture: z.string().nullable().describe("URL path to the profile picture."),
+	profilePicture: z
+		.string()
+		.nullable()
+		.describe("URL path to the profile picture."),
 	createdAt: z.date().describe("Profile creation date."),
 	updatedAt: z.date().describe("Profile last updated date."),
 });
@@ -106,7 +109,9 @@ export const editProfileMultipartSchemaRequest = z.object({
 
 export type CreateProfileBody = z.infer<typeof createProfileSchemaRequest>;
 export type EditProfileBody = z.infer<typeof editProfileSchemaRequest>;
-export type EditProfileMultipartBody = z.infer<typeof editProfileMultipartSchemaRequest>;
+export type EditProfileMultipartBody = z.infer<
+	typeof editProfileMultipartSchemaRequest
+>;
 export type SocialMediaInput = z.infer<typeof socialMediaInputSchema>;
 export type ExperienceInput = z.infer<typeof experienceInputSchema>;
 export type ProfileData = z.infer<typeof profileDataSchema>;

@@ -1,4 +1,4 @@
-import { hash } from "bcrypt";
+import argon2 from "argon2";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
 	EmailAlreadyExistsError,
@@ -6,8 +6,8 @@ import {
 	InvalidRefreshTokenError,
 } from "./auth.errors";
 import { type AuthRepositoryContract, AuthService } from "./auth.service";
-import type { IEmailService } from "./email.service";
 import type { UserWithPassword } from "./auth.types";
+import type { IEmailService } from "../email";
 
 const now = new Date();
 
@@ -36,6 +36,7 @@ const createRepository = (): MockAuthRepository =>
 		createUser: vi.fn(),
 		updateUserGoogleId: vi.fn(),
 		updateUserEmailVerified: vi.fn(),
+		updatePasswordHash: vi.fn(),
 		createRefreshToken: vi.fn(),
 		findRefreshTokenByHash: vi.fn(),
 		rotateRefreshToken: vi.fn(),
@@ -74,7 +75,9 @@ describe("AuthService", () => {
 	it("rejects invalid login credentials", async () => {
 		repository.findUserByEmail.mockResolvedValue({
 			...user,
-			passwordHash: await hash("correct-password", 12),
+			passwordHash: await argon2.hash("correct-password", {
+				type: argon2.argon2id,
+			}),
 		});
 
 		await expect(
@@ -92,6 +95,9 @@ describe("AuthService", () => {
 			id: "018f6b4f-4580-7000-8000-000000000002",
 			userId: user.id,
 			tokenHash: "stored-token-hash",
+			deviceId: "legacy",
+			deviceName: null,
+			lastUsedAt: now,
 			expiresAt,
 			revokedAt: null,
 			user,
@@ -109,6 +115,9 @@ describe("AuthService", () => {
 			id: "018f6b4f-4580-7000-8000-000000000003",
 			userId: user.id,
 			tokenHash: "stored-token-hash",
+			deviceId: "legacy",
+			deviceName: null,
+			lastUsedAt: now,
 			expiresAt: new Date(Date.now() + 60_000),
 			revokedAt: new Date(),
 			user,

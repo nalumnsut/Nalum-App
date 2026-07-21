@@ -14,13 +14,13 @@ import { AdminRepository } from "./admin.repository";
 import { AdminService } from "./admin.service";
 
 const adminRoutes: FastifyPluginAsync = async (fastify) => {
-  const repository = new AdminRepository(fastify.prisma);
-  const service = new AdminService(repository);
-  const controller = new AdminController(service);
-  const app = fastify.withTypeProvider<ZodTypeProvider>();
+	const repository = new AdminRepository(fastify.prisma);
+	const service = new AdminService(repository);
+	const controller = new AdminController(service);
+	const app = fastify.withTypeProvider<ZodTypeProvider>();
 
-  void app;
-  void controller;
+	void app;
+	void controller;
 };
 
 export default adminRoutes;

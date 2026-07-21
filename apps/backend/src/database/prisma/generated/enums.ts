@@ -53,3 +53,20 @@ export const AlumniVerificationStatus = {
 } as const
 
 export type AlumniVerificationStatus = (typeof AlumniVerificationStatus)[keyof typeof AlumniVerificationStatus]
+
+
+export const ConversationType = {
+  DIRECT: 'DIRECT',
+  GROUP: 'GROUP'
+} as const
+
+export type ConversationType = (typeof ConversationType)[keyof typeof ConversationType]
+
+
+export const ConversationParticipantRole = {
+  OWNER: 'OWNER',
+  ADMIN: 'ADMIN',
+  MEMBER: 'MEMBER'
+} as const
+
+export type ConversationParticipantRole = (typeof ConversationParticipantRole)[keyof typeof ConversationParticipantRole]

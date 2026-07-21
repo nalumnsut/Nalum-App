@@ -12,5 +12,5 @@
 import type { PrismaClient } from "../../database/prisma/generated/client";
 
 export class AdminRepository {
-  constructor(private readonly prisma: PrismaClient) {}
+	constructor(readonly _prisma: PrismaClient) {}
 }

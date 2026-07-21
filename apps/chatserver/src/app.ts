@@ -1,0 +1,185 @@
+import jwt from "@fastify/jwt";
+import websocket from "@fastify/websocket";
+import Fastify from "fastify";
+import type { FastifyServerOptions } from "fastify";
+import { createPrismaClient } from "../../../packages/database/src/client";
+import { env } from "./config/env.config";
+import { ConnectionRegistry } from "./realtime/connection.registry";
+import { RedisFanout } from "./realtime/redis.fanout";
+import { PresenceService } from "./realtime/presence.service";
+import { ChatError } from "./modules/chat/chat.errors";
+import { ChatRepository } from "./modules/chat/chat.repository";
+import { registerChatRoutes } from "./modules/chat/chat.routes";
+import { messageSendSchema, typingStartSchema } from "./modules/chat/chat.schema";
+import { ChatService } from "./modules/chat/chat.service";
+
+type AccessTokenPayload = {
+	sub: string;
+	tokenType: "access";
+};
+
+declare module "fastify" {
+	interface FastifyRequest {
+		chatUserId?: string;
+	}
+}
+
+const CHAT_PROTOCOL = "nalum.chat.v1";
+
+export const buildApp = async (options: FastifyServerOptions = {}) => {
+	const app = Fastify({ logger: true, ...options });
+	const prisma = createPrismaClient(env.DATABASE_URL);
+	const registry = new ConnectionRegistry();
+	const fanout = new RedisFanout(env.REDIS_URL, registry);
+	const chatService = new ChatService(new ChatRepository(prisma));
+	const presence = new PresenceService(env.REDIS_URL);
+	const publishToUsers = async (userIds: string[], message: unknown) =>
+		Promise.all(userIds.map((userId) => fanout.publish({ userId, message })));
+
+	await fanout.connect();
+	await presence.connect(
+		async (userId, lastSeenAt) => {
+			await chatService.updateLastSeenAt(userId, lastSeenAt);
+			await publishToUsers(await chatService.getPresenceAudienceUserIds(userId), {
+				type: "presence:update",
+				payload: { userId, status: "offline", lastSeenAt: lastSeenAt.toISOString() },
+			});
+		},
+		async (conversationId, userId) => {
+			await publishToUsers((await chatService.getParticipantUserIds(conversationId)).filter((participantId) => participantId !== userId), {
+				type: "typing:update",
+				payload: { conversationId, userId, isTyping: false },
+			});
+		},
+	);
+	await app.register(jwt, { secret: env.JWT_SECRET });
+	await app.register(websocket, { options: { maxPayload: 16 * 1024 } });
+
+	const authenticate = async (request: import("fastify").FastifyRequest, token: string) => {
+		let payload: AccessTokenPayload;
+		try {
+			payload = request.server.jwt.verify<AccessTokenPayload>(token);
+		} catch {
+			throw new ChatError("Authentication required", 401, "CHAT_AUTH_REQUIRED");
+		}
+		if (payload.tokenType !== "access") throw new ChatError("Access token is required", 401, "CHAT_ACCESS_TOKEN_REQUIRED");
+		const user = await prisma.user.findUnique({
+			where: { id: payload.sub },
+			include: {
+				bans: { where: { revokedAt: null, OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }] } },
+			},
+		});
+		if (!user || user.bans.length > 0) throw new ChatError("User is not allowed to connect", 401, "CHAT_USER_NOT_ALLOWED");
+		request.chatUserId = user.id;
+	};
+
+	const authenticateHttp = async (request: import("fastify").FastifyRequest) => {
+		const authorization = request.headers.authorization;
+		const token = authorization?.startsWith("Bearer ") ? authorization.slice(7) : undefined;
+		if (!token) throw new ChatError("Authentication required", 401, "CHAT_AUTH_REQUIRED");
+		await authenticate(request, token);
+	};
+
+	app.setErrorHandler((error, _request, reply) => {
+		if (error instanceof ChatError) return reply.code(error.statusCode).send({ success: false, code: error.code, message: error.message });
+		if (error instanceof Error && error.name === "ZodError") return reply.code(400).send({ success: false, code: "CHAT_VALIDATION", message: "Invalid request payload" });
+		app.log.error(error);
+		return reply.code(500).send({ success: false, code: "CHAT_INTERNAL", message: "Internal server error" });
+	});
+
+	app.get("/api/health", async () => {
+		await prisma.$queryRaw`SELECT 1`;
+		return { status: "OK", service: "chatserver" };
+	});
+
+	await registerChatRoutes(app, chatService, authenticateHttp);
+
+	app.get(
+		"/ws",
+		{
+			websocket: true,
+			preValidation: async (request) => {
+				const protocols = request.headers["sec-websocket-protocol"]
+					?.split(",")
+					.map((value) => value.trim())
+					.filter(Boolean);
+				const accessToken = protocols?.find((value) => value !== CHAT_PROTOCOL);
+				if (!protocols?.includes(CHAT_PROTOCOL) || !accessToken) {
+					throw new Error("WebSocket authentication protocol is required");
+				}
+
+				await authenticate(request, accessToken);
+			},
+		},
+		(socket, request) => {
+			const userId = request.chatUserId!;
+			const connectionId = crypto.randomUUID();
+			registry.add(userId, socket);
+			void presence.heartbeat(userId, connectionId).then(async (becameOnline) => {
+				if (becameOnline) {
+					await publishToUsers(await chatService.getPresenceAudienceUserIds(userId), {
+						type: "presence:update",
+						payload: { userId, status: "online" },
+					});
+				}
+			});
+			socket.send(
+				JSON.stringify({
+					type: "socket:ack",
+					payload: {
+						connectionId,
+						userId,
+						serverTime: new Date().toISOString(),
+					},
+				}),
+			);
+			socket.on("message", (rawMessage: Buffer) => {
+				void (async () => {
+					try {
+						const event = JSON.parse(rawMessage.toString()) as { type?: string; payload?: unknown };
+						if (event.type === "message:send") {
+							const input = messageSendSchema.parse(event.payload);
+							const { message, created } = await chatService.sendMessage(userId, input);
+							socket.send(JSON.stringify({ type: "message:accepted", payload: message }));
+							if (created) await publishToUsers(await chatService.getParticipantUserIds(input.conversationId), { type: "message:new", payload: message });
+							return;
+						}
+						if (event.type === "presence:heartbeat") {
+							const becameOnline = await presence.heartbeat(userId, connectionId);
+							if (becameOnline) await publishToUsers(await chatService.getPresenceAudienceUserIds(userId), { type: "presence:update", payload: { userId, status: "online" } });
+							return;
+						}
+						if (event.type === "typing:start") {
+							const { conversationId } = typingStartSchema.parse(event.payload);
+							await chatService.requireActiveParticipant(conversationId, userId);
+							await presence.startTyping(conversationId, userId);
+							await publishToUsers((await chatService.getParticipantUserIds(conversationId)).filter((participantId) => participantId !== userId), { type: "typing:update", payload: { conversationId, userId, isTyping: true } });
+							return;
+						}
+						throw new ChatError("Unknown socket event", 400, "CHAT_UNKNOWN_EVENT");
+					} catch (error) {
+						const chatError = error instanceof ChatError ? error : new ChatError("Invalid socket payload", 400, "CHAT_VALIDATION");
+						socket.send(JSON.stringify({ type: "error", payload: { code: chatError.code, message: chatError.message } }));
+					}
+				})();
+			});
+			socket.on("close", () => {
+				registry.remove(userId, socket);
+				void presence.disconnect(userId, connectionId).then(async (becameOffline) => {
+					if (!becameOffline) return;
+					const lastSeenAt = new Date();
+					await chatService.updateLastSeenAt(userId, lastSeenAt);
+					await publishToUsers(await chatService.getPresenceAudienceUserIds(userId), { type: "presence:update", payload: { userId, status: "offline", lastSeenAt: lastSeenAt.toISOString() } });
+				});
+			});
+		},
+	);
+
+	app.addHook("onClose", async () => {
+		await presence.close();
+		await fanout.close();
+		await prisma.$disconnect();
+	});
+
+	return app;
+};

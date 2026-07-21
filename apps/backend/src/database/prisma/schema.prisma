@@ -47,6 +47,17 @@ enum AlumniVerificationStatus {
   REJECTED
 }
 
+enum ConversationType {
+  DIRECT
+  GROUP
+}
+
+enum ConversationParticipantRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
 model User {
   id                String    @id @default(uuid(7)) @db.Uuid
   firstName         String
@@ -61,6 +72,7 @@ model User {
   profileCompleted  Boolean   @default(false)
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
+  lastSeenAt        DateTime?
   // Relations
   profile           Profile?
   socialMedia       SocialMedia?
@@ -69,14 +81,60 @@ model User {
   bansIssued        UserBan[] @relation("BansIssuedByAdmin")
   refreshTokens     RefreshToken[]
   emailOtps         EmailOtp[]
+  conversationParticipants ConversationParticipant[]
+  sentMessages      Message[] @relation("MessageSender")
   @@index([firstName])
   @@index([lastName])
+}
+
+model Conversation {
+  id              String                    @id @default(uuid(7)) @db.Uuid
+  type            ConversationType
+  name            String?
+  directPairKey   String?                   @unique
+  lastMessageAt   DateTime                  @default(now())
+  createdAt       DateTime                  @default(now())
+  updatedAt       DateTime                  @updatedAt
+  participants    ConversationParticipant[]
+  messages        Message[]
+
+  @@index([lastMessageAt, id])
+}
+
+model ConversationParticipant {
+  conversationId  String                    @db.Uuid
+  userId          String                    @db.Uuid
+  role            ConversationParticipantRole @default(MEMBER)
+  joinedAt        DateTime                  @default(now())
+  leftAt          DateTime?
+  conversation    Conversation              @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user            User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([conversationId, userId])
+  @@index([userId, leftAt, joinedAt])
+}
+
+model Message {
+  id              String                    @id @default(uuid(7)) @db.Uuid
+  conversationId  String                    @db.Uuid
+  senderId        String                    @db.Uuid
+  clientMessageId String
+  text            String
+  createdAt       DateTime                  @default(now())
+  conversation    Conversation              @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender          User                      @relation("MessageSender", fields: [senderId], references: [id], onDelete: Restrict)
+
+  @@unique([conversationId, senderId, clientMessageId])
+  @@index([conversationId, createdAt, id])
 }
 
 model RefreshToken {
   id          String    @id @default(uuid(7)) @db.Uuid
   userId      String    @db.Uuid
   tokenHash   String    @unique
+  deviceId    String    @default("legacy")
+  deviceName  String?
+  lastUsedAt  DateTime  @default(now())
   expiresAt   DateTime
   revokedAt   DateTime?
   createdAt   DateTime  @default(now())
@@ -84,6 +142,7 @@ model RefreshToken {
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+  @@index([userId, deviceId])
   @@index([expiresAt, revokedAt])
 }
 

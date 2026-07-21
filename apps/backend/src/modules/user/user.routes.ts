@@ -36,8 +36,7 @@ const userRoutes: FastifyPluginAsync = async (fastify) => {
 			preHandler: protect,
 			schema: {
 				summary: "Search users",
-				description:
-					"Searches users by text query and profile filters.",
+				description: "Searches users by text query and profile filters.",
 				tags: ["Users"],
 				security: [{ bearerAuth: [] }],
 				querystring: schema.searchUsersQuerySchema,

@@ -15,13 +15,23 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import { env } from "../../config/env.config";
 import {
 	ACCESS_TOKEN_EXPIRY,
+	DEVICE_ID_COOKIE_NAME,
+	DEVICE_ID_COOKIE_PATH,
 	REFRESH_TOKEN_COOKIE_NAME,
 	REFRESH_TOKEN_COOKIE_PATH,
 } from "./auth.constants";
-import type { GoogleUserInfo } from "./auth.types";
-import type { LoginBody, RegisterBody, VerifyEmailOtpBody } from "./auth.schema";
+import type {
+	LoginBody,
+	RegisterBody,
+	VerifyEmailOtpBody,
+} from "./auth.schema";
 import type { AuthService } from "./auth.service";
-import type { AccessTokenPayload, AuthSession } from "./auth.types";
+import type {
+	AccessTokenPayload,
+	AuthSession,
+	GoogleUserInfo,
+} from "./auth.types";
+import type { SessionParams } from "./auth.schema";
 
 export class AuthController {
 	constructor(private readonly authService: AuthService) {}
@@ -30,23 +40,36 @@ export class AuthController {
 		request: FastifyRequest<{ Body: RegisterBody }>,
 		reply: FastifyReply,
 	) => {
-		const session = await this.authService.register(request.body);
-		return this.sendAuthSession(reply, session, "Registered successfully", 201);
+		const session = await this.authService.register(
+			request.body,
+			this.getDevice(request),
+		);
+		return this.sendAuthSession(
+			request,
+			reply,
+			session,
+			"Registered successfully",
+			201,
+		);
 	};
 
 	login = async (
 		request: FastifyRequest<{ Body: LoginBody }>,
 		reply: FastifyReply,
 	) => {
-		const session = await this.authService.login(request.body);
-		return this.sendAuthSession(reply, session, "Logged in successfully");
+		const session = await this.authService.login(
+			request.body,
+			this.getDevice(request),
+		);
+		return this.sendAuthSession(request, reply, session, "Logged in successfully");
 	};
 
 	refresh = async (request: FastifyRequest, reply: FastifyReply) => {
 		const session = await this.authService.refresh(
 			request.cookies[REFRESH_TOKEN_COOKIE_NAME],
+			this.getDevice(request),
 		);
-		return this.sendAuthSession(reply, session, "Token refreshed");
+		return this.sendAuthSession(request, reply, session, "Token refreshed");
 	};
 
 	logout = async (request: FastifyRequest, reply: FastifyReply) => {
@@ -54,6 +77,21 @@ export class AuthController {
 
 		this.clearRefreshCookie(reply);
 		return reply.success(null, "Logged out successfully");
+	};
+
+	listSessions = async (request: FastifyRequest, reply: FastifyReply) =>
+		reply.success(await this.authService.listSessions(request.currentUser!.id));
+
+	revokeSession = async (
+		request: FastifyRequest,
+		reply: FastifyReply,
+	) => {
+		const { sessionId } = request.params as SessionParams;
+		await this.authService.revokeSession(
+			request.currentUser!.id,
+			sessionId,
+		);
+		return reply.success(null, "Session revoked");
 	};
 
 	sendEmailVerificationOtp = async (
@@ -64,45 +102,50 @@ export class AuthController {
 		return reply.success(null, "Email verification OTP sent");
 	};
 
-	verifyEmailOtp = async (
-		request: FastifyRequest,
-		reply: FastifyReply,
-	) => {
+	verifyEmailOtp = async (request: FastifyRequest, reply: FastifyReply) => {
 		const body = request.body as VerifyEmailOtpBody;
-		await this.authService.verifyEmailOtp(
-			request.currentUser!,
-			body.otp,
-		);
+		await this.authService.verifyEmailOtp(request.currentUser!, body.otp);
 		return reply.success(null, "Email verified successfully");
 	};
 
 	googleCallback = async (request: FastifyRequest, reply: FastifyReply) => {
-		const { token } = await request.server.googleOAuth2.getAccessTokenFromAuthorizationCodeFlow(
-			request,
-			reply,
-		);
+		const { token } =
+			await request.server.googleOAuth2.getAccessTokenFromAuthorizationCodeFlow(
+				request,
+				reply,
+			);
 
-		const response = await fetch("https://openidconnect.googleapis.com/v1/userinfo", {
-			headers: {
-				Authorization: `Bearer ${token.access_token}`,
+		const response = await fetch(
+			"https://openidconnect.googleapis.com/v1/userinfo",
+			{
+				headers: {
+					Authorization: `Bearer ${token.access_token}`,
+				},
 			},
-		});
+		);
 
 		if (!response.ok) {
 			throw new Error("Failed to fetch Google profile");
 		}
 
 		const profile = (await response.json()) as GoogleUserInfo;
-		const session = await this.authService.loginWithGoogle(profile);
-		return this.sendAuthSession(reply, session, "Logged in with Google");
+		const session = await this.authService.loginWithGoogle(
+			profile,
+			this.getDevice(request),
+		);
+		this.setDeviceCookie(reply, this.getDevice(request).id);
+		this.setRefreshCookie(reply, session.refreshToken, session.refreshTokenExpiresAt);
+		return reply.redirect(new URL("/auth/callback", env.WEB_APP_URL).toString());
 	};
 
 	private async sendAuthSession(
+		request: FastifyRequest,
 		reply: FastifyReply,
 		session: AuthSession,
 		message: string,
 		statusCode = 200,
 	) {
+		this.setDeviceCookie(reply, this.getDevice(request).id);
 		this.setRefreshCookie(
 			reply,
 			session.refreshToken,
@@ -126,6 +169,24 @@ export class AuthController {
 			message,
 			statusCode,
 		);
+	}
+
+	private getDevice(request: FastifyRequest) {
+		return {
+			id: request.cookies[DEVICE_ID_COOKIE_NAME] ?? crypto.randomUUID(),
+			name: request.headers["user-agent"]?.slice(0, 200) ?? null,
+		};
+	}
+
+	private setDeviceCookie(reply: FastifyReply, deviceId: string) {
+		reply.setCookie(DEVICE_ID_COOKIE_NAME, deviceId, {
+			httpOnly: true,
+			path: DEVICE_ID_COOKIE_PATH,
+			sameSite: "lax",
+			secure: env.NODE_ENV === "production",
+			signed: false,
+			maxAge: 60 * 60 * 24 * 365,
+		});
 	}
 
 	private setRefreshCookie(

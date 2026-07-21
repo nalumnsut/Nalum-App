@@ -1,5 +1,9 @@
 import { z } from "zod/v4";
-import { BranchEnum, CampusEnum, profileDataSchema } from "../profile/profile.schema";
+import {
+	BranchEnum,
+	CampusEnum,
+	profileDataSchema,
+} from "../profile/profile.schema";
 
 const UserRoleEnum = z.enum(["STUDENT", "ALUMNI", "ADMIN", "PROFESSOR"]);
 
@@ -59,9 +63,7 @@ export const userDetailsSchema = z.object({
 	role: UserRoleEnum,
 	emailVerified: z.boolean(),
 	emailVerifiedAt: z.date().nullable(),
-	verificationStatus: z
-		.enum(["PENDING", "VERIFIED", "REJECTED"])
-		.nullable(),
+	verificationStatus: z.enum(["PENDING", "VERIFIED", "REJECTED"]).nullable(),
 	profileCompleted: z.boolean(),
 	createdAt: z.date(),
 	updatedAt: z.date(),

@@ -14,5 +14,5 @@
 import type { AdminService } from "./admin.service";
 
 export class AdminController {
-  constructor(private readonly adminService: AdminService) {}
+	constructor(readonly _adminService: AdminService) {}
 }

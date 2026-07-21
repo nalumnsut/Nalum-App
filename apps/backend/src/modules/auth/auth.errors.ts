@@ -13,9 +13,10 @@
  * - Mix business logic into error definitions.
  * - Duplicate generic errors that belong in shared packages.
  */
+
+import BadRequestError from "../../errors/bad-request.error";
 import ConflictError from "../../errors/conflict.error";
 import UnauthorizedError from "../../errors/unauthorized.error";
-import BadRequestError from "../../errors/bad-request.error";
 
 export class EmailAlreadyExistsError extends ConflictError {
 	constructor() {

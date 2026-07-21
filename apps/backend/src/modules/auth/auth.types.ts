@@ -56,6 +56,9 @@ export type RefreshTokenRecord = {
 	id: string;
 	userId: string;
 	tokenHash: string;
+	deviceId: string;
+	deviceName: string | null;
+	lastUsedAt: Date;
 	expiresAt: Date;
 	revokedAt: Date | null;
 	user: UserWithPassword;
@@ -82,6 +85,8 @@ export type CreateUserInput = {
 export type CreateRefreshTokenInput = {
 	userId: string;
 	tokenHash: string;
+	deviceId: string;
+	deviceName?: string | null;
 	expiresAt: Date;
 };
 

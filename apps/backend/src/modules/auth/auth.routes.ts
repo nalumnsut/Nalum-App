@@ -9,15 +9,13 @@
 
 import type { FastifyPluginAsync } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
+import { protect } from "../../middlewares/auth.middleware";
+import oauthPlugin from "../../plugins/oauth.plugin";
 import { AuthController } from "./auth.controller";
 import AuthRepository from "./auth.repository";
 import * as schema from "./auth.schema";
 import { AuthService } from "./auth.service";
-import oauthPlugin from "../../plugins/oauth.plugin";
-import { protect } from "../../middlewares/auth.middleware";
-import { EmailService } from "./email.service";
-
-
+import { EmailService } from "../email";
 
 const authRoutes: FastifyPluginAsync = async (fastify) => {
 	const repository = new AuthRepository(fastify.prisma);
@@ -92,6 +90,28 @@ const authRoutes: FastifyPluginAsync = async (fastify) => {
 			},
 		},
 		controller.logout,
+	);
+
+	app.get(
+		"/sessions",
+		{
+			preHandler: protect,
+			schema: { tags: ["Auth"], security: [{ bearerAuth: [] }] },
+		},
+		controller.listSessions,
+	);
+
+	app.delete(
+		"/sessions/:sessionId",
+		{
+			preHandler: protect,
+			schema: {
+				tags: ["Auth"],
+				security: [{ bearerAuth: [] }],
+				params: schema.sessionParamsSchema,
+			},
+		},
+		controller.revokeSession,
 	);
 
 	app.post(

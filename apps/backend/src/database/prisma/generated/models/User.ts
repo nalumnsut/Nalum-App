@@ -38,6 +38,7 @@ export type UserMinAggregateOutputType = {
   profileCompleted: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
+  lastSeenAt: Date | null
 }
 
 export type UserMaxAggregateOutputType = {
@@ -54,6 +55,7 @@ export type UserMaxAggregateOutputType = {
   profileCompleted: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
+  lastSeenAt: Date | null
 }
 
 export type UserCountAggregateOutputType = {
@@ -70,6 +72,7 @@ export type UserCountAggregateOutputType = {
   profileCompleted: number
   createdAt: number
   updatedAt: number
+  lastSeenAt: number
   _all: number
 }
 
@@ -88,6 +91,7 @@ export type UserMinAggregateInputType = {
   profileCompleted?: true
   createdAt?: true
   updatedAt?: true
+  lastSeenAt?: true
 }
 
 export type UserMaxAggregateInputType = {
@@ -104,6 +108,7 @@ export type UserMaxAggregateInputType = {
   profileCompleted?: true
   createdAt?: true
   updatedAt?: true
+  lastSeenAt?: true
 }
 
 export type UserCountAggregateInputType = {
@@ -120,6 +125,7 @@ export type UserCountAggregateInputType = {
   profileCompleted?: true
   createdAt?: true
   updatedAt?: true
+  lastSeenAt?: true
   _all?: true
 }
 
@@ -209,6 +215,7 @@ export type UserGroupByOutputType = {
   profileCompleted: boolean
   createdAt: Date
   updatedAt: Date
+  lastSeenAt: Date | null
   _count: UserCountAggregateOutputType | null
   _min: UserMinAggregateOutputType | null
   _max: UserMaxAggregateOutputType | null
@@ -246,6 +253,7 @@ export type UserWhereInput = {
   profileCompleted?: Prisma.BoolFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  lastSeenAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   profile?: Prisma.XOR<Prisma.ProfileNullableScalarRelationFilter, Prisma.ProfileWhereInput> | null
   socialMedia?: Prisma.XOR<Prisma.SocialMediaNullableScalarRelationFilter, Prisma.SocialMediaWhereInput> | null
   experiences?: Prisma.ExperienceListRelationFilter
@@ -253,6 +261,8 @@ export type UserWhereInput = {
   bansIssued?: Prisma.UserBanListRelationFilter
   refreshTokens?: Prisma.RefreshTokenListRelationFilter
   emailOtps?: Prisma.EmailOtpListRelationFilter
+  conversationParticipants?: Prisma.ConversationParticipantListRelationFilter
+  sentMessages?: Prisma.MessageListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -269,6 +279,7 @@ export type UserOrderByWithRelationInput = {
   profileCompleted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  lastSeenAt?: Prisma.SortOrderInput | Prisma.SortOrder
   profile?: Prisma.ProfileOrderByWithRelationInput
   socialMedia?: Prisma.SocialMediaOrderByWithRelationInput
   experiences?: Prisma.ExperienceOrderByRelationAggregateInput
@@ -276,6 +287,8 @@ export type UserOrderByWithRelationInput = {
   bansIssued?: Prisma.UserBanOrderByRelationAggregateInput
   refreshTokens?: Prisma.RefreshTokenOrderByRelationAggregateInput
   emailOtps?: Prisma.EmailOtpOrderByRelationAggregateInput
+  conversationParticipants?: Prisma.ConversationParticipantOrderByRelationAggregateInput
+  sentMessages?: Prisma.MessageOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -295,6 +308,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   profileCompleted?: Prisma.BoolFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  lastSeenAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   profile?: Prisma.XOR<Prisma.ProfileNullableScalarRelationFilter, Prisma.ProfileWhereInput> | null
   socialMedia?: Prisma.XOR<Prisma.SocialMediaNullableScalarRelationFilter, Prisma.SocialMediaWhereInput> | null
   experiences?: Prisma.ExperienceListRelationFilter
@@ -302,6 +316,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   bansIssued?: Prisma.UserBanListRelationFilter
   refreshTokens?: Prisma.RefreshTokenListRelationFilter
   emailOtps?: Prisma.EmailOtpListRelationFilter
+  conversationParticipants?: Prisma.ConversationParticipantListRelationFilter
+  sentMessages?: Prisma.MessageListRelationFilter
 }, "id" | "email" | "googleId">
 
 export type UserOrderByWithAggregationInput = {
@@ -318,6 +334,7 @@ export type UserOrderByWithAggregationInput = {
   profileCompleted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  lastSeenAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
   _max?: Prisma.UserMaxOrderByAggregateInput
   _min?: Prisma.UserMinOrderByAggregateInput
@@ -340,6 +357,7 @@ export type UserScalarWhereWithAggregatesInput = {
   profileCompleted?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
+  lastSeenAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
 }
 
 export type UserCreateInput = {
@@ -356,6 +374,7 @@ export type UserCreateInput = {
   profileCompleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  lastSeenAt?: Date | string | null
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
   socialMedia?: Prisma.SocialMediaCreateNestedOneWithoutUserInput
   experiences?: Prisma.ExperienceCreateNestedManyWithoutUserInput
@@ -363,6 +382,8 @@ export type UserCreateInput = {
   bansIssued?: Prisma.UserBanCreateNestedManyWithoutBannedByInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   emailOtps?: Prisma.EmailOtpCreateNestedManyWithoutUserInput
+  conversationParticipants?: Prisma.ConversationParticipantCreateNestedManyWithoutUserInput
+  sentMessages?: Prisma.MessageCreateNestedManyWithoutSenderInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -379,6 +400,7 @@ export type UserUncheckedCreateInput = {
   profileCompleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  lastSeenAt?: Date | string | null
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   socialMedia?: Prisma.SocialMediaUncheckedCreateNestedOneWithoutUserInput
   experiences?: Prisma.ExperienceUncheckedCreateNestedManyWithoutUserInput
@@ -386,6 +408,8 @@ export type UserUncheckedCreateInput = {
   bansIssued?: Prisma.UserBanUncheckedCreateNestedManyWithoutBannedByInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   emailOtps?: Prisma.EmailOtpUncheckedCreateNestedManyWithoutUserInput
+  conversationParticipants?: Prisma.ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+  sentMessages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
 }
 
 export type UserUpdateInput = {
@@ -402,6 +426,7 @@ export type UserUpdateInput = {
   profileCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
   socialMedia?: Prisma.SocialMediaUpdateOneWithoutUserNestedInput
   experiences?: Prisma.ExperienceUpdateManyWithoutUserNestedInput
@@ -409,6 +434,8 @@ export type UserUpdateInput = {
   bansIssued?: Prisma.UserBanUpdateManyWithoutBannedByNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   emailOtps?: Prisma.EmailOtpUpdateManyWithoutUserNestedInput
+  conversationParticipants?: Prisma.ConversationParticipantUpdateManyWithoutUserNestedInput
+  sentMessages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -425,6 +452,7 @@ export type UserUncheckedUpdateInput = {
   profileCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   socialMedia?: Prisma.SocialMediaUncheckedUpdateOneWithoutUserNestedInput
   experiences?: Prisma.ExperienceUncheckedUpdateManyWithoutUserNestedInput
@@ -432,6 +460,8 @@ export type UserUncheckedUpdateInput = {
   bansIssued?: Prisma.UserBanUncheckedUpdateManyWithoutBannedByNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   emailOtps?: Prisma.EmailOtpUncheckedUpdateManyWithoutUserNestedInput
+  conversationParticipants?: Prisma.ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+  sentMessages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -448,6 +478,7 @@ export type UserCreateManyInput = {
   profileCompleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  lastSeenAt?: Date | string | null
 }
 
 export type UserUpdateManyMutationInput = {
@@ -464,6 +495,7 @@ export type UserUpdateManyMutationInput = {
   profileCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type UserUncheckedUpdateManyInput = {
@@ -480,6 +512,7 @@ export type UserUncheckedUpdateManyInput = {
   profileCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type UserCountOrderByAggregateInput = {
@@ -496,6 +529,7 @@ export type UserCountOrderByAggregateInput = {
   profileCompleted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  lastSeenAt?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
@@ -512,6 +546,7 @@ export type UserMaxOrderByAggregateInput = {
   profileCompleted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  lastSeenAt?: Prisma.SortOrder
 }
 
 export type UserMinOrderByAggregateInput = {
@@ -528,6 +563,7 @@ export type UserMinOrderByAggregateInput = {
   profileCompleted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  lastSeenAt?: Prisma.SortOrder
 }
 
 export type UserScalarRelationFilter = {
@@ -566,6 +602,34 @@ export type NullableEnumAlumniVerificationStatusFieldUpdateOperationsInput = {
 
 export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
+}
+
+export type UserCreateNestedOneWithoutConversationParticipantsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutConversationParticipantsInput, Prisma.UserUncheckedCreateWithoutConversationParticipantsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutConversationParticipantsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutConversationParticipantsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutConversationParticipantsInput, Prisma.UserUncheckedCreateWithoutConversationParticipantsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutConversationParticipantsInput
+  upsert?: Prisma.UserUpsertWithoutConversationParticipantsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutConversationParticipantsInput, Prisma.UserUpdateWithoutConversationParticipantsInput>, Prisma.UserUncheckedUpdateWithoutConversationParticipantsInput>
+}
+
+export type UserCreateNestedOneWithoutSentMessagesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSentMessagesInput, Prisma.UserUncheckedCreateWithoutSentMessagesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSentMessagesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutSentMessagesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSentMessagesInput, Prisma.UserUncheckedCreateWithoutSentMessagesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSentMessagesInput
+  upsert?: Prisma.UserUpsertWithoutSentMessagesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSentMessagesInput, Prisma.UserUpdateWithoutSentMessagesInput>, Prisma.UserUncheckedUpdateWithoutSentMessagesInput>
 }
 
 export type UserCreateNestedOneWithoutRefreshTokensInput = {
@@ -668,6 +732,238 @@ export type UserUpdateOneWithoutBansIssuedNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutBansIssuedInput, Prisma.UserUpdateWithoutBansIssuedInput>, Prisma.UserUncheckedUpdateWithoutBansIssuedInput>
 }
 
+export type UserCreateWithoutConversationParticipantsInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  email: string
+  passwordHash?: string | null
+  googleId?: string | null
+  role: $Enums.UserRole
+  emailVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  verificationStatus?: $Enums.AlumniVerificationStatus | null
+  profileCompleted?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lastSeenAt?: Date | string | null
+  profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
+  socialMedia?: Prisma.SocialMediaCreateNestedOneWithoutUserInput
+  experiences?: Prisma.ExperienceCreateNestedManyWithoutUserInput
+  bans?: Prisma.UserBanCreateNestedManyWithoutUserInput
+  bansIssued?: Prisma.UserBanCreateNestedManyWithoutBannedByInput
+  refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  emailOtps?: Prisma.EmailOtpCreateNestedManyWithoutUserInput
+  sentMessages?: Prisma.MessageCreateNestedManyWithoutSenderInput
+}
+
+export type UserUncheckedCreateWithoutConversationParticipantsInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  email: string
+  passwordHash?: string | null
+  googleId?: string | null
+  role: $Enums.UserRole
+  emailVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  verificationStatus?: $Enums.AlumniVerificationStatus | null
+  profileCompleted?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lastSeenAt?: Date | string | null
+  profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
+  socialMedia?: Prisma.SocialMediaUncheckedCreateNestedOneWithoutUserInput
+  experiences?: Prisma.ExperienceUncheckedCreateNestedManyWithoutUserInput
+  bans?: Prisma.UserBanUncheckedCreateNestedManyWithoutUserInput
+  bansIssued?: Prisma.UserBanUncheckedCreateNestedManyWithoutBannedByInput
+  refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  emailOtps?: Prisma.EmailOtpUncheckedCreateNestedManyWithoutUserInput
+  sentMessages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
+}
+
+export type UserCreateOrConnectWithoutConversationParticipantsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutConversationParticipantsInput, Prisma.UserUncheckedCreateWithoutConversationParticipantsInput>
+}
+
+export type UserUpsertWithoutConversationParticipantsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutConversationParticipantsInput, Prisma.UserUncheckedUpdateWithoutConversationParticipantsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutConversationParticipantsInput, Prisma.UserUncheckedCreateWithoutConversationParticipantsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutConversationParticipantsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutConversationParticipantsInput, Prisma.UserUncheckedUpdateWithoutConversationParticipantsInput>
+}
+
+export type UserUpdateWithoutConversationParticipantsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verificationStatus?: Prisma.NullableEnumAlumniVerificationStatusFieldUpdateOperationsInput | $Enums.AlumniVerificationStatus | null
+  profileCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
+  socialMedia?: Prisma.SocialMediaUpdateOneWithoutUserNestedInput
+  experiences?: Prisma.ExperienceUpdateManyWithoutUserNestedInput
+  bans?: Prisma.UserBanUpdateManyWithoutUserNestedInput
+  bansIssued?: Prisma.UserBanUpdateManyWithoutBannedByNestedInput
+  refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  emailOtps?: Prisma.EmailOtpUpdateManyWithoutUserNestedInput
+  sentMessages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
+}
+
+export type UserUncheckedUpdateWithoutConversationParticipantsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verificationStatus?: Prisma.NullableEnumAlumniVerificationStatusFieldUpdateOperationsInput | $Enums.AlumniVerificationStatus | null
+  profileCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
+  socialMedia?: Prisma.SocialMediaUncheckedUpdateOneWithoutUserNestedInput
+  experiences?: Prisma.ExperienceUncheckedUpdateManyWithoutUserNestedInput
+  bans?: Prisma.UserBanUncheckedUpdateManyWithoutUserNestedInput
+  bansIssued?: Prisma.UserBanUncheckedUpdateManyWithoutBannedByNestedInput
+  refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  emailOtps?: Prisma.EmailOtpUncheckedUpdateManyWithoutUserNestedInput
+  sentMessages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
+}
+
+export type UserCreateWithoutSentMessagesInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  email: string
+  passwordHash?: string | null
+  googleId?: string | null
+  role: $Enums.UserRole
+  emailVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  verificationStatus?: $Enums.AlumniVerificationStatus | null
+  profileCompleted?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lastSeenAt?: Date | string | null
+  profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
+  socialMedia?: Prisma.SocialMediaCreateNestedOneWithoutUserInput
+  experiences?: Prisma.ExperienceCreateNestedManyWithoutUserInput
+  bans?: Prisma.UserBanCreateNestedManyWithoutUserInput
+  bansIssued?: Prisma.UserBanCreateNestedManyWithoutBannedByInput
+  refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  emailOtps?: Prisma.EmailOtpCreateNestedManyWithoutUserInput
+  conversationParticipants?: Prisma.ConversationParticipantCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutSentMessagesInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  email: string
+  passwordHash?: string | null
+  googleId?: string | null
+  role: $Enums.UserRole
+  emailVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  verificationStatus?: $Enums.AlumniVerificationStatus | null
+  profileCompleted?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lastSeenAt?: Date | string | null
+  profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
+  socialMedia?: Prisma.SocialMediaUncheckedCreateNestedOneWithoutUserInput
+  experiences?: Prisma.ExperienceUncheckedCreateNestedManyWithoutUserInput
+  bans?: Prisma.UserBanUncheckedCreateNestedManyWithoutUserInput
+  bansIssued?: Prisma.UserBanUncheckedCreateNestedManyWithoutBannedByInput
+  refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  emailOtps?: Prisma.EmailOtpUncheckedCreateNestedManyWithoutUserInput
+  conversationParticipants?: Prisma.ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutSentMessagesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutSentMessagesInput, Prisma.UserUncheckedCreateWithoutSentMessagesInput>
+}
+
+export type UserUpsertWithoutSentMessagesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutSentMessagesInput, Prisma.UserUncheckedUpdateWithoutSentMessagesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutSentMessagesInput, Prisma.UserUncheckedCreateWithoutSentMessagesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutSentMessagesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutSentMessagesInput, Prisma.UserUncheckedUpdateWithoutSentMessagesInput>
+}
+
+export type UserUpdateWithoutSentMessagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verificationStatus?: Prisma.NullableEnumAlumniVerificationStatusFieldUpdateOperationsInput | $Enums.AlumniVerificationStatus | null
+  profileCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
+  socialMedia?: Prisma.SocialMediaUpdateOneWithoutUserNestedInput
+  experiences?: Prisma.ExperienceUpdateManyWithoutUserNestedInput
+  bans?: Prisma.UserBanUpdateManyWithoutUserNestedInput
+  bansIssued?: Prisma.UserBanUpdateManyWithoutBannedByNestedInput
+  refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  emailOtps?: Prisma.EmailOtpUpdateManyWithoutUserNestedInput
+  conversationParticipants?: Prisma.ConversationParticipantUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutSentMessagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verificationStatus?: Prisma.NullableEnumAlumniVerificationStatusFieldUpdateOperationsInput | $Enums.AlumniVerificationStatus | null
+  profileCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
+  socialMedia?: Prisma.SocialMediaUncheckedUpdateOneWithoutUserNestedInput
+  experiences?: Prisma.ExperienceUncheckedUpdateManyWithoutUserNestedInput
+  bans?: Prisma.UserBanUncheckedUpdateManyWithoutUserNestedInput
+  bansIssued?: Prisma.UserBanUncheckedUpdateManyWithoutBannedByNestedInput
+  refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  emailOtps?: Prisma.EmailOtpUncheckedUpdateManyWithoutUserNestedInput
+  conversationParticipants?: Prisma.ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+}
+
 export type UserCreateWithoutRefreshTokensInput = {
   id?: string
   firstName: string
@@ -682,12 +978,15 @@ export type UserCreateWithoutRefreshTokensInput = {
   profileCompleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  lastSeenAt?: Date | string | null
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
   socialMedia?: Prisma.SocialMediaCreateNestedOneWithoutUserInput
   experiences?: Prisma.ExperienceCreateNestedManyWithoutUserInput
   bans?: Prisma.UserBanCreateNestedManyWithoutUserInput
   bansIssued?: Prisma.UserBanCreateNestedManyWithoutBannedByInput
   emailOtps?: Prisma.EmailOtpCreateNestedManyWithoutUserInput
+  conversationParticipants?: Prisma.ConversationParticipantCreateNestedManyWithoutUserInput
+  sentMessages?: Prisma.MessageCreateNestedManyWithoutSenderInput
 }
 
 export type UserUncheckedCreateWithoutRefreshTokensInput = {
@@ -704,12 +1003,15 @@ export type UserUncheckedCreateWithoutRefreshTokensInput = {
   profileCompleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  lastSeenAt?: Date | string | null
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   socialMedia?: Prisma.SocialMediaUncheckedCreateNestedOneWithoutUserInput
   experiences?: Prisma.ExperienceUncheckedCreateNestedManyWithoutUserInput
   bans?: Prisma.UserBanUncheckedCreateNestedManyWithoutUserInput
   bansIssued?: Prisma.UserBanUncheckedCreateNestedManyWithoutBannedByInput
   emailOtps?: Prisma.EmailOtpUncheckedCreateNestedManyWithoutUserInput
+  conversationParticipants?: Prisma.ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+  sentMessages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
 }
 
 export type UserCreateOrConnectWithoutRefreshTokensInput = {
@@ -742,12 +1044,15 @@ export type UserUpdateWithoutRefreshTokensInput = {
   profileCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
   socialMedia?: Prisma.SocialMediaUpdateOneWithoutUserNestedInput
   experiences?: Prisma.ExperienceUpdateManyWithoutUserNestedInput
   bans?: Prisma.UserBanUpdateManyWithoutUserNestedInput
   bansIssued?: Prisma.UserBanUpdateManyWithoutBannedByNestedInput
   emailOtps?: Prisma.EmailOtpUpdateManyWithoutUserNestedInput
+  conversationParticipants?: Prisma.ConversationParticipantUpdateManyWithoutUserNestedInput
+  sentMessages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRefreshTokensInput = {
@@ -764,12 +1069,15 @@ export type UserUncheckedUpdateWithoutRefreshTokensInput = {
   profileCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   socialMedia?: Prisma.SocialMediaUncheckedUpdateOneWithoutUserNestedInput
   experiences?: Prisma.ExperienceUncheckedUpdateManyWithoutUserNestedInput
   bans?: Prisma.UserBanUncheckedUpdateManyWithoutUserNestedInput
   bansIssued?: Prisma.UserBanUncheckedUpdateManyWithoutBannedByNestedInput
   emailOtps?: Prisma.EmailOtpUncheckedUpdateManyWithoutUserNestedInput
+  conversationParticipants?: Prisma.ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+  sentMessages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
 }
 
 export type UserCreateWithoutEmailOtpsInput = {
@@ -786,12 +1094,15 @@ export type UserCreateWithoutEmailOtpsInput = {
   profileCompleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  lastSeenAt?: Date | string | null
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
   socialMedia?: Prisma.SocialMediaCreateNestedOneWithoutUserInput
   experiences?: Prisma.ExperienceCreateNestedManyWithoutUserInput
   bans?: Prisma.UserBanCreateNestedManyWithoutUserInput
   bansIssued?: Prisma.UserBanCreateNestedManyWithoutBannedByInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  conversationParticipants?: Prisma.ConversationParticipantCreateNestedManyWithoutUserInput
+  sentMessages?: Prisma.MessageCreateNestedManyWithoutSenderInput
 }
 
 export type UserUncheckedCreateWithoutEmailOtpsInput = {
@@ -808,12 +1119,15 @@ export type UserUncheckedCreateWithoutEmailOtpsInput = {
   profileCompleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  lastSeenAt?: Date | string | null
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   socialMedia?: Prisma.SocialMediaUncheckedCreateNestedOneWithoutUserInput
   experiences?: Prisma.ExperienceUncheckedCreateNestedManyWithoutUserInput
   bans?: Prisma.UserBanUncheckedCreateNestedManyWithoutUserInput
   bansIssued?: Prisma.UserBanUncheckedCreateNestedManyWithoutBannedByInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  conversationParticipants?: Prisma.ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+  sentMessages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
 }
 
 export type UserCreateOrConnectWithoutEmailOtpsInput = {
@@ -846,12 +1160,15 @@ export type UserUpdateWithoutEmailOtpsInput = {
   profileCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
   socialMedia?: Prisma.SocialMediaUpdateOneWithoutUserNestedInput
   experiences?: Prisma.ExperienceUpdateManyWithoutUserNestedInput
   bans?: Prisma.UserBanUpdateManyWithoutUserNestedInput
   bansIssued?: Prisma.UserBanUpdateManyWithoutBannedByNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  conversationParticipants?: Prisma.ConversationParticipantUpdateManyWithoutUserNestedInput
+  sentMessages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
 }
 
 export type UserUncheckedUpdateWithoutEmailOtpsInput = {
@@ -868,12 +1185,15 @@ export type UserUncheckedUpdateWithoutEmailOtpsInput = {
   profileCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   socialMedia?: Prisma.SocialMediaUncheckedUpdateOneWithoutUserNestedInput
   experiences?: Prisma.ExperienceUncheckedUpdateManyWithoutUserNestedInput
   bans?: Prisma.UserBanUncheckedUpdateManyWithoutUserNestedInput
   bansIssued?: Prisma.UserBanUncheckedUpdateManyWithoutBannedByNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  conversationParticipants?: Prisma.ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+  sentMessages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
 }
 
 export type UserCreateWithoutProfileInput = {
@@ -890,12 +1210,15 @@ export type UserCreateWithoutProfileInput = {
   profileCompleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  lastSeenAt?: Date | string | null
   socialMedia?: Prisma.SocialMediaCreateNestedOneWithoutUserInput
   experiences?: Prisma.ExperienceCreateNestedManyWithoutUserInput
   bans?: Prisma.UserBanCreateNestedManyWithoutUserInput
   bansIssued?: Prisma.UserBanCreateNestedManyWithoutBannedByInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   emailOtps?: Prisma.EmailOtpCreateNestedManyWithoutUserInput
+  conversationParticipants?: Prisma.ConversationParticipantCreateNestedManyWithoutUserInput
+  sentMessages?: Prisma.MessageCreateNestedManyWithoutSenderInput
 }
 
 export type UserUncheckedCreateWithoutProfileInput = {
@@ -912,12 +1235,15 @@ export type UserUncheckedCreateWithoutProfileInput = {
   profileCompleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  lastSeenAt?: Date | string | null
   socialMedia?: Prisma.SocialMediaUncheckedCreateNestedOneWithoutUserInput
   experiences?: Prisma.ExperienceUncheckedCreateNestedManyWithoutUserInput
   bans?: Prisma.UserBanUncheckedCreateNestedManyWithoutUserInput
   bansIssued?: Prisma.UserBanUncheckedCreateNestedManyWithoutBannedByInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   emailOtps?: Prisma.EmailOtpUncheckedCreateNestedManyWithoutUserInput
+  conversationParticipants?: Prisma.ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+  sentMessages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
 }
 
 export type UserCreateOrConnectWithoutProfileInput = {
@@ -950,12 +1276,15 @@ export type UserUpdateWithoutProfileInput = {
   profileCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   socialMedia?: Prisma.SocialMediaUpdateOneWithoutUserNestedInput
   experiences?: Prisma.ExperienceUpdateManyWithoutUserNestedInput
   bans?: Prisma.UserBanUpdateManyWithoutUserNestedInput
   bansIssued?: Prisma.UserBanUpdateManyWithoutBannedByNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   emailOtps?: Prisma.EmailOtpUpdateManyWithoutUserNestedInput
+  conversationParticipants?: Prisma.ConversationParticipantUpdateManyWithoutUserNestedInput
+  sentMessages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
 }
 
 export type UserUncheckedUpdateWithoutProfileInput = {
@@ -972,12 +1301,15 @@ export type UserUncheckedUpdateWithoutProfileInput = {
   profileCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   socialMedia?: Prisma.SocialMediaUncheckedUpdateOneWithoutUserNestedInput
   experiences?: Prisma.ExperienceUncheckedUpdateManyWithoutUserNestedInput
   bans?: Prisma.UserBanUncheckedUpdateManyWithoutUserNestedInput
   bansIssued?: Prisma.UserBanUncheckedUpdateManyWithoutBannedByNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   emailOtps?: Prisma.EmailOtpUncheckedUpdateManyWithoutUserNestedInput
+  conversationParticipants?: Prisma.ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+  sentMessages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
 }
 
 export type UserCreateWithoutSocialMediaInput = {
@@ -994,12 +1326,15 @@ export type UserCreateWithoutSocialMediaInput = {
   profileCompleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  lastSeenAt?: Date | string | null
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
   experiences?: Prisma.ExperienceCreateNestedManyWithoutUserInput
   bans?: Prisma.UserBanCreateNestedManyWithoutUserInput
   bansIssued?: Prisma.UserBanCreateNestedManyWithoutBannedByInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   emailOtps?: Prisma.EmailOtpCreateNestedManyWithoutUserInput
+  conversationParticipants?: Prisma.ConversationParticipantCreateNestedManyWithoutUserInput
+  sentMessages?: Prisma.MessageCreateNestedManyWithoutSenderInput
 }
 
 export type UserUncheckedCreateWithoutSocialMediaInput = {
@@ -1016,12 +1351,15 @@ export type UserUncheckedCreateWithoutSocialMediaInput = {
   profileCompleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  lastSeenAt?: Date | string | null
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   experiences?: Prisma.ExperienceUncheckedCreateNestedManyWithoutUserInput
   bans?: Prisma.UserBanUncheckedCreateNestedManyWithoutUserInput
   bansIssued?: Prisma.UserBanUncheckedCreateNestedManyWithoutBannedByInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   emailOtps?: Prisma.EmailOtpUncheckedCreateNestedManyWithoutUserInput
+  conversationParticipants?: Prisma.ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+  sentMessages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
 }
 
 export type UserCreateOrConnectWithoutSocialMediaInput = {
@@ -1054,12 +1392,15 @@ export type UserUpdateWithoutSocialMediaInput = {
   profileCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
   experiences?: Prisma.ExperienceUpdateManyWithoutUserNestedInput
   bans?: Prisma.UserBanUpdateManyWithoutUserNestedInput
   bansIssued?: Prisma.UserBanUpdateManyWithoutBannedByNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   emailOtps?: Prisma.EmailOtpUpdateManyWithoutUserNestedInput
+  conversationParticipants?: Prisma.ConversationParticipantUpdateManyWithoutUserNestedInput
+  sentMessages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSocialMediaInput = {
@@ -1076,12 +1417,15 @@ export type UserUncheckedUpdateWithoutSocialMediaInput = {
   profileCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   experiences?: Prisma.ExperienceUncheckedUpdateManyWithoutUserNestedInput
   bans?: Prisma.UserBanUncheckedUpdateManyWithoutUserNestedInput
   bansIssued?: Prisma.UserBanUncheckedUpdateManyWithoutBannedByNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   emailOtps?: Prisma.EmailOtpUncheckedUpdateManyWithoutUserNestedInput
+  conversationParticipants?: Prisma.ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+  sentMessages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
 }
 
 export type UserCreateWithoutExperiencesInput = {
@@ -1098,12 +1442,15 @@ export type UserCreateWithoutExperiencesInput = {
   profileCompleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  lastSeenAt?: Date | string | null
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
   socialMedia?: Prisma.SocialMediaCreateNestedOneWithoutUserInput
   bans?: Prisma.UserBanCreateNestedManyWithoutUserInput
   bansIssued?: Prisma.UserBanCreateNestedManyWithoutBannedByInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   emailOtps?: Prisma.EmailOtpCreateNestedManyWithoutUserInput
+  conversationParticipants?: Prisma.ConversationParticipantCreateNestedManyWithoutUserInput
+  sentMessages?: Prisma.MessageCreateNestedManyWithoutSenderInput
 }
 
 export type UserUncheckedCreateWithoutExperiencesInput = {
@@ -1120,12 +1467,15 @@ export type UserUncheckedCreateWithoutExperiencesInput = {
   profileCompleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  lastSeenAt?: Date | string | null
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   socialMedia?: Prisma.SocialMediaUncheckedCreateNestedOneWithoutUserInput
   bans?: Prisma.UserBanUncheckedCreateNestedManyWithoutUserInput
   bansIssued?: Prisma.UserBanUncheckedCreateNestedManyWithoutBannedByInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   emailOtps?: Prisma.EmailOtpUncheckedCreateNestedManyWithoutUserInput
+  conversationParticipants?: Prisma.ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+  sentMessages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
 }
 
 export type UserCreateOrConnectWithoutExperiencesInput = {
@@ -1158,12 +1508,15 @@ export type UserUpdateWithoutExperiencesInput = {
   profileCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
   socialMedia?: Prisma.SocialMediaUpdateOneWithoutUserNestedInput
   bans?: Prisma.UserBanUpdateManyWithoutUserNestedInput
   bansIssued?: Prisma.UserBanUpdateManyWithoutBannedByNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   emailOtps?: Prisma.EmailOtpUpdateManyWithoutUserNestedInput
+  conversationParticipants?: Prisma.ConversationParticipantUpdateManyWithoutUserNestedInput
+  sentMessages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
 }
 
 export type UserUncheckedUpdateWithoutExperiencesInput = {
@@ -1180,12 +1533,15 @@ export type UserUncheckedUpdateWithoutExperiencesInput = {
   profileCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   socialMedia?: Prisma.SocialMediaUncheckedUpdateOneWithoutUserNestedInput
   bans?: Prisma.UserBanUncheckedUpdateManyWithoutUserNestedInput
   bansIssued?: Prisma.UserBanUncheckedUpdateManyWithoutBannedByNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   emailOtps?: Prisma.EmailOtpUncheckedUpdateManyWithoutUserNestedInput
+  conversationParticipants?: Prisma.ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+  sentMessages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
 }
 
 export type UserCreateWithoutBansInput = {
@@ -1202,12 +1558,15 @@ export type UserCreateWithoutBansInput = {
   profileCompleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  lastSeenAt?: Date | string | null
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
   socialMedia?: Prisma.SocialMediaCreateNestedOneWithoutUserInput
   experiences?: Prisma.ExperienceCreateNestedManyWithoutUserInput
   bansIssued?: Prisma.UserBanCreateNestedManyWithoutBannedByInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   emailOtps?: Prisma.EmailOtpCreateNestedManyWithoutUserInput
+  conversationParticipants?: Prisma.ConversationParticipantCreateNestedManyWithoutUserInput
+  sentMessages?: Prisma.MessageCreateNestedManyWithoutSenderInput
 }
 
 export type UserUncheckedCreateWithoutBansInput = {
@@ -1224,12 +1583,15 @@ export type UserUncheckedCreateWithoutBansInput = {
   profileCompleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  lastSeenAt?: Date | string | null
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   socialMedia?: Prisma.SocialMediaUncheckedCreateNestedOneWithoutUserInput
   experiences?: Prisma.ExperienceUncheckedCreateNestedManyWithoutUserInput
   bansIssued?: Prisma.UserBanUncheckedCreateNestedManyWithoutBannedByInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   emailOtps?: Prisma.EmailOtpUncheckedCreateNestedManyWithoutUserInput
+  conversationParticipants?: Prisma.ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+  sentMessages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
 }
 
 export type UserCreateOrConnectWithoutBansInput = {
@@ -1251,12 +1613,15 @@ export type UserCreateWithoutBansIssuedInput = {
   profileCompleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  lastSeenAt?: Date | string | null
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
   socialMedia?: Prisma.SocialMediaCreateNestedOneWithoutUserInput
   experiences?: Prisma.ExperienceCreateNestedManyWithoutUserInput
   bans?: Prisma.UserBanCreateNestedManyWithoutUserInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   emailOtps?: Prisma.EmailOtpCreateNestedManyWithoutUserInput
+  conversationParticipants?: Prisma.ConversationParticipantCreateNestedManyWithoutUserInput
+  sentMessages?: Prisma.MessageCreateNestedManyWithoutSenderInput
 }
 
 export type UserUncheckedCreateWithoutBansIssuedInput = {
@@ -1273,12 +1638,15 @@ export type UserUncheckedCreateWithoutBansIssuedInput = {
   profileCompleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  lastSeenAt?: Date | string | null
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   socialMedia?: Prisma.SocialMediaUncheckedCreateNestedOneWithoutUserInput
   experiences?: Prisma.ExperienceUncheckedCreateNestedManyWithoutUserInput
   bans?: Prisma.UserBanUncheckedCreateNestedManyWithoutUserInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   emailOtps?: Prisma.EmailOtpUncheckedCreateNestedManyWithoutUserInput
+  conversationParticipants?: Prisma.ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+  sentMessages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
 }
 
 export type UserCreateOrConnectWithoutBansIssuedInput = {
@@ -1311,12 +1679,15 @@ export type UserUpdateWithoutBansInput = {
   profileCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
   socialMedia?: Prisma.SocialMediaUpdateOneWithoutUserNestedInput
   experiences?: Prisma.ExperienceUpdateManyWithoutUserNestedInput
   bansIssued?: Prisma.UserBanUpdateManyWithoutBannedByNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   emailOtps?: Prisma.EmailOtpUpdateManyWithoutUserNestedInput
+  conversationParticipants?: Prisma.ConversationParticipantUpdateManyWithoutUserNestedInput
+  sentMessages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
 }
 
 export type UserUncheckedUpdateWithoutBansInput = {
@@ -1333,12 +1704,15 @@ export type UserUncheckedUpdateWithoutBansInput = {
   profileCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   socialMedia?: Prisma.SocialMediaUncheckedUpdateOneWithoutUserNestedInput
   experiences?: Prisma.ExperienceUncheckedUpdateManyWithoutUserNestedInput
   bansIssued?: Prisma.UserBanUncheckedUpdateManyWithoutBannedByNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   emailOtps?: Prisma.EmailOtpUncheckedUpdateManyWithoutUserNestedInput
+  conversationParticipants?: Prisma.ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+  sentMessages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
 }
 
 export type UserUpsertWithoutBansIssuedInput = {
@@ -1366,12 +1740,15 @@ export type UserUpdateWithoutBansIssuedInput = {
   profileCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
   socialMedia?: Prisma.SocialMediaUpdateOneWithoutUserNestedInput
   experiences?: Prisma.ExperienceUpdateManyWithoutUserNestedInput
   bans?: Prisma.UserBanUpdateManyWithoutUserNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   emailOtps?: Prisma.EmailOtpUpdateManyWithoutUserNestedInput
+  conversationParticipants?: Prisma.ConversationParticipantUpdateManyWithoutUserNestedInput
+  sentMessages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
 }
 
 export type UserUncheckedUpdateWithoutBansIssuedInput = {
@@ -1388,12 +1765,15 @@ export type UserUncheckedUpdateWithoutBansIssuedInput = {
   profileCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   socialMedia?: Prisma.SocialMediaUncheckedUpdateOneWithoutUserNestedInput
   experiences?: Prisma.ExperienceUncheckedUpdateManyWithoutUserNestedInput
   bans?: Prisma.UserBanUncheckedUpdateManyWithoutUserNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   emailOtps?: Prisma.EmailOtpUncheckedUpdateManyWithoutUserNestedInput
+  conversationParticipants?: Prisma.ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+  sentMessages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
 }
 
 
@@ -1407,6 +1787,8 @@ export type UserCountOutputType = {
   bansIssued: number
   refreshTokens: number
   emailOtps: number
+  conversationParticipants: number
+  sentMessages: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1415,6 +1797,8 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   bansIssued?: boolean | UserCountOutputTypeCountBansIssuedArgs
   refreshTokens?: boolean | UserCountOutputTypeCountRefreshTokensArgs
   emailOtps?: boolean | UserCountOutputTypeCountEmailOtpsArgs
+  conversationParticipants?: boolean | UserCountOutputTypeCountConversationParticipantsArgs
+  sentMessages?: boolean | UserCountOutputTypeCountSentMessagesArgs
 }
 
 /**
@@ -1462,6 +1846,20 @@ export type UserCountOutputTypeCountEmailOtpsArgs<ExtArgs extends runtime.Types.
   where?: Prisma.EmailOtpWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountConversationParticipantsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ConversationParticipantWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountSentMessagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MessageWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1477,6 +1875,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   profileCompleted?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  lastSeenAt?: boolean
   profile?: boolean | Prisma.User$profileArgs<ExtArgs>
   socialMedia?: boolean | Prisma.User$socialMediaArgs<ExtArgs>
   experiences?: boolean | Prisma.User$experiencesArgs<ExtArgs>
@@ -1484,6 +1883,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   bansIssued?: boolean | Prisma.User$bansIssuedArgs<ExtArgs>
   refreshTokens?: boolean | Prisma.User$refreshTokensArgs<ExtArgs>
   emailOtps?: boolean | Prisma.User$emailOtpsArgs<ExtArgs>
+  conversationParticipants?: boolean | Prisma.User$conversationParticipantsArgs<ExtArgs>
+  sentMessages?: boolean | Prisma.User$sentMessagesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1501,6 +1902,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   profileCompleted?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  lastSeenAt?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1517,6 +1919,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   profileCompleted?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  lastSeenAt?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectScalar = {
@@ -1533,9 +1936,10 @@ export type UserSelectScalar = {
   profileCompleted?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  lastSeenAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "firstName" | "lastName" | "email" | "passwordHash" | "googleId" | "role" | "emailVerified" | "emailVerifiedAt" | "verificationStatus" | "profileCompleted" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "firstName" | "lastName" | "email" | "passwordHash" | "googleId" | "role" | "emailVerified" | "emailVerifiedAt" | "verificationStatus" | "profileCompleted" | "createdAt" | "updatedAt" | "lastSeenAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   profile?: boolean | Prisma.User$profileArgs<ExtArgs>
   socialMedia?: boolean | Prisma.User$socialMediaArgs<ExtArgs>
@@ -1544,6 +1948,8 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   bansIssued?: boolean | Prisma.User$bansIssuedArgs<ExtArgs>
   refreshTokens?: boolean | Prisma.User$refreshTokensArgs<ExtArgs>
   emailOtps?: boolean | Prisma.User$emailOtpsArgs<ExtArgs>
+  conversationParticipants?: boolean | Prisma.User$conversationParticipantsArgs<ExtArgs>
+  sentMessages?: boolean | Prisma.User$sentMessagesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1559,6 +1965,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     bansIssued: Prisma.$UserBanPayload<ExtArgs>[]
     refreshTokens: Prisma.$RefreshTokenPayload<ExtArgs>[]
     emailOtps: Prisma.$EmailOtpPayload<ExtArgs>[]
+    conversationParticipants: Prisma.$ConversationParticipantPayload<ExtArgs>[]
+    sentMessages: Prisma.$MessagePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1574,6 +1982,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     profileCompleted: boolean
     createdAt: Date
     updatedAt: Date
+    lastSeenAt: Date | null
   }, ExtArgs["result"]["user"]>
   composites: {}
 }
@@ -1975,6 +2384,8 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   bansIssued<T extends Prisma.User$bansIssuedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$bansIssuedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserBanPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   refreshTokens<T extends Prisma.User$refreshTokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$refreshTokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RefreshTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   emailOtps<T extends Prisma.User$emailOtpsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$emailOtpsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EmailOtpPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  conversationParticipants<T extends Prisma.User$conversationParticipantsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$conversationParticipantsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConversationParticipantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  sentMessages<T extends Prisma.User$sentMessagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sentMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2017,6 +2428,7 @@ export interface UserFieldRefs {
   readonly profileCompleted: Prisma.FieldRef<"User", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
+  readonly lastSeenAt: Prisma.FieldRef<"User", 'DateTime'>
 }
     
 
@@ -2565,6 +2977,54 @@ export type User$emailOtpsArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.EmailOtpScalarFieldEnum | Prisma.EmailOtpScalarFieldEnum[]
+}
+
+/**
+ * User.conversationParticipants
+ */
+export type User$conversationParticipantsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ConversationParticipant
+   */
+  select?: Prisma.ConversationParticipantSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ConversationParticipant
+   */
+  omit?: Prisma.ConversationParticipantOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ConversationParticipantInclude<ExtArgs> | null
+  where?: Prisma.ConversationParticipantWhereInput
+  orderBy?: Prisma.ConversationParticipantOrderByWithRelationInput | Prisma.ConversationParticipantOrderByWithRelationInput[]
+  cursor?: Prisma.ConversationParticipantWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ConversationParticipantScalarFieldEnum | Prisma.ConversationParticipantScalarFieldEnum[]
+}
+
+/**
+ * User.sentMessages
+ */
+export type User$sentMessagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Message
+   */
+  select?: Prisma.MessageSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Message
+   */
+  omit?: Prisma.MessageOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MessageInclude<ExtArgs> | null
+  where?: Prisma.MessageWhereInput
+  orderBy?: Prisma.MessageOrderByWithRelationInput | Prisma.MessageOrderByWithRelationInput[]
+  cursor?: Prisma.MessageWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MessageScalarFieldEnum | Prisma.MessageScalarFieldEnum[]
 }
 
 /**

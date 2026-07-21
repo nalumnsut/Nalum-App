@@ -1,8 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ProfileService } from "./profile.service";
+import type {
+	Branch,
+	Campus,
+	Profile,
+} from "../../database/prisma/generated/client";
+import {
+	ProfileAlreadyExistsError,
+	ProfileNotFoundError,
+} from "./profile.errors";
 import type { ProfileRepository } from "./profile.repository";
-import { ProfileAlreadyExistsError, ProfileNotFoundError } from "./profile.errors";
-import type { Profile, Branch, Campus } from "../../database/prisma/generated/client";
+import { ProfileService } from "./profile.service";
 
 const now = new Date();
 
@@ -48,16 +55,18 @@ describe("ProfileService", () => {
 
 			const result = await service.getProfile(sampleProfile.userId);
 
-			expect(repository.findProfileByUserId).toHaveBeenCalledWith(sampleProfile.userId);
+			expect(repository.findProfileByUserId).toHaveBeenCalledWith(
+				sampleProfile.userId,
+			);
 			expect(result).toEqual(sampleProfile);
 		});
 
 		it("throws ProfileNotFoundError when profile does not exist", async () => {
 			repository.findProfileByUserId.mockResolvedValue(null);
 
-			await expect(service.getProfile(sampleProfile.userId)).rejects.toBeInstanceOf(
-				ProfileNotFoundError
-			);
+			await expect(
+				service.getProfile(sampleProfile.userId),
+			).rejects.toBeInstanceOf(ProfileNotFoundError);
 		});
 	});
 
@@ -72,10 +81,18 @@ describe("ProfileService", () => {
 				campus: "MAIN" as Campus,
 			};
 
-			const result = await service.createProfile(sampleProfile.userId, createData);
+			const result = await service.createProfile(
+				sampleProfile.userId,
+				createData,
+			);
 
-			expect(repository.findProfileByUserId).toHaveBeenCalledWith(sampleProfile.userId);
-			expect(repository.createProfile).toHaveBeenCalledWith(sampleProfile.userId, createData);
+			expect(repository.findProfileByUserId).toHaveBeenCalledWith(
+				sampleProfile.userId,
+			);
+			expect(repository.createProfile).toHaveBeenCalledWith(
+				sampleProfile.userId,
+				createData,
+			);
 			expect(result).toEqual(sampleProfile);
 		});
 
@@ -89,7 +106,7 @@ describe("ProfileService", () => {
 			};
 
 			await expect(
-				service.createProfile(sampleProfile.userId, createData)
+				service.createProfile(sampleProfile.userId, createData),
 			).rejects.toBeInstanceOf(ProfileAlreadyExistsError);
 		});
 	});
@@ -100,12 +117,19 @@ describe("ProfileService", () => {
 			const updatedProfile = { ...sampleProfile, city: "Bengaluru" };
 			repository.updateProfile.mockResolvedValue(updatedProfile);
 
-			const result = await service.editProfile(sampleProfile.userId, { city: "Bengaluru" });
-
-			expect(repository.findProfileByUserId).toHaveBeenCalledWith(sampleProfile.userId);
-			expect(repository.updateProfile).toHaveBeenCalledWith(sampleProfile.userId, {
+			const result = await service.editProfile(sampleProfile.userId, {
 				city: "Bengaluru",
 			});
+
+			expect(repository.findProfileByUserId).toHaveBeenCalledWith(
+				sampleProfile.userId,
+			);
+			expect(repository.updateProfile).toHaveBeenCalledWith(
+				sampleProfile.userId,
+				{
+					city: "Bengaluru",
+				},
+			);
 			expect(result.city).toBe("Bengaluru");
 		});
 
@@ -113,7 +137,7 @@ describe("ProfileService", () => {
 			repository.findProfileByUserId.mockResolvedValue(null);
 
 			await expect(
-				service.editProfile(sampleProfile.userId, { city: "Bengaluru" })
+				service.editProfile(sampleProfile.userId, { city: "Bengaluru" }),
 			).rejects.toBeInstanceOf(ProfileNotFoundError);
 		});
 	});

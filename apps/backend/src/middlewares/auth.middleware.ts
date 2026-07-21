@@ -1,7 +1,7 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
+import type { User } from "../database/prisma/generated/client";
 import UnauthorizedError from "../errors/unauthorized.error";
 import type { AccessTokenPayload } from "../modules/auth/auth.types";
-import type { User } from "../database/prisma/generated/client";
 
 declare module "@fastify/jwt" {
 	interface FastifyJWT {
@@ -51,13 +51,10 @@ export const protect = async (
 			bans: {
 				where: {
 					revokedAt: null,
-					OR: [
-						{ expiresAt: null },
-						{ expiresAt: { gt: new Date() } }
-					]
-				}
-			}
-		}
+					OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
+				},
+			},
+		},
 	});
 
 	if (!user) {
@@ -65,9 +62,11 @@ export const protect = async (
 	}
 
 	if (user.bans.length > 0) {
-		throw new UnauthorizedError("User has been banned from the platform", "USER_BANNED");
+		throw new UnauthorizedError(
+			"User has been banned from the platform",
+			"USER_BANNED",
+		);
 	}
 
 	request.currentUser = user;
 };
-

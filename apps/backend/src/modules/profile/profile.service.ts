@@ -5,10 +5,15 @@ import type {
 	Profile,
 	SocialMedia,
 } from "../../database/prisma/generated/client";
-import { ProfileAlreadyExistsError, ProfileNotFoundError } from "./profile.errors";
+import {
+	ProfileAlreadyExistsError,
+	ProfileNotFoundError,
+} from "./profile.errors";
 import type { ProfileRepository } from "./profile.repository";
 
-type ProfileUpdateData = Partial<Omit<Profile, "userId" | "createdAt" | "updatedAt">>;
+type ProfileUpdateData = Partial<
+	Omit<Profile, "userId" | "createdAt" | "updatedAt">
+>;
 type SocialMediaUpdateData = Partial<Omit<SocialMedia, "userId">>;
 type ExperienceUpdateData = Omit<Experience, "id" | "userId" | "createdAt">;
 
@@ -25,9 +30,10 @@ export class ProfileService {
 
 	async createProfile(
 		userId: string,
-		data: { batch: number; branch: Branch; campus: Campus }
+		data: { batch: number; branch: Branch; campus: Campus },
 	): Promise<Profile> {
-		const existingProfile = await this.profileRepository.findProfileByUserId(userId);
+		const existingProfile =
+			await this.profileRepository.findProfileByUserId(userId);
 		if (existingProfile) {
 			throw new ProfileAlreadyExistsError();
 		}
@@ -43,7 +49,8 @@ export class ProfileService {
 			experiences?: ExperienceUpdateData[];
 		},
 	): Promise<Profile> {
-		const existingProfile = await this.profileRepository.findProfileByUserId(userId);
+		const existingProfile =
+			await this.profileRepository.findProfileByUserId(userId);
 		if (!existingProfile) {
 			throw new ProfileNotFoundError();
 		}

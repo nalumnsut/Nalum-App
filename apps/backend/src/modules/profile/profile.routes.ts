@@ -1,10 +1,10 @@
 import type { FastifyPluginAsync } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
+import { protect } from "../../middlewares/auth.middleware";
 import { ProfileController } from "./profile.controller";
 import { ProfileRepository } from "./profile.repository";
-import { ProfileService } from "./profile.service";
-import { protect } from "../../middlewares/auth.middleware";
 import * as schema from "./profile.schema";
+import { ProfileService } from "./profile.service";
 
 const profileRoutes: FastifyPluginAsync = async (fastify) => {
 	const repository = new ProfileRepository(fastify.prisma);
@@ -18,7 +18,8 @@ const profileRoutes: FastifyPluginAsync = async (fastify) => {
 			preHandler: protect,
 			schema: {
 				summary: "Create user profile",
-				description: "Creates the basic user profile containing batch, branch, and campus details.",
+				description:
+					"Creates the basic user profile containing batch, branch, and campus details.",
 				tags: ["Profile"],
 				security: [{ bearerAuth: [] }],
 				body: schema.createProfileSchemaRequest,
@@ -37,7 +38,8 @@ const profileRoutes: FastifyPluginAsync = async (fastify) => {
 			validatorCompiler: () => () => true, // Bypass json body validator to handle multipart manually
 			schema: {
 				summary: "Edit user profile",
-				description: "Updates user profile. Accepts multipart/form-data. File upload is supported via 'profilePicture' field.",
+				description:
+					"Updates user profile. Accepts multipart/form-data. File upload is supported via 'profilePicture' field.",
 				tags: ["Profile"],
 				security: [{ bearerAuth: [] }],
 				consumes: ["multipart/form-data"],
