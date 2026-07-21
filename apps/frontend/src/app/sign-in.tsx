@@ -1,2 +1,76 @@
-import { useState } from 'react'; import { Alert, Linking, Text, View } from 'react-native'; import { Link, router } from 'expo-router'; import { Button, Card, Field, Screen } from '@/components/ui/nalum'; import { authApi } from '@/lib/api'; import { useAuthStore } from '@/stores/auth-store';
-export default function SignIn(){const[email,setEmail]=useState('');const[password,setPassword]=useState('');const[busy,setBusy]=useState(false);const submit=async()=>{setBusy(true);try{const user=await authApi.login(email,password);useAuthStore.getState().setUser(user);router.replace(!user.emailVerified?'/verify':!user.profileCompleted?'/onboarding':'/directory');}catch(e){Alert.alert('Sign in failed',e instanceof Error?e.message:'Try again.')}finally{setBusy(false)}};return <Screen><View className="mb-10"><Text className="text-4xl font-bold text-foreground">Nalum</Text><Text className="mt-2 text-lg text-muted">The NSUT alumni network.</Text></View><Card><Text className="mb-5 text-2xl font-semibold text-foreground">Welcome back</Text><View className="gap-3"><Field value={email} onChangeText={setEmail} placeholder="Email address" keyboardType="email-address"/><Field value={password} onChangeText={setPassword} placeholder="Password" secureTextEntry/><Button onPress={submit} disabled={busy}>{busy?'Signing in…':'Sign in'}</Button><Button variant="secondary" onPress={()=>Linking.openURL(authApi.googleUrl)}>Continue with Google</Button></View></Card><Text className="mt-6 text-center text-muted">New to Nalum? <Link href="/sign-up" className="font-semibold text-maroon">Create an account</Link></Text></Screen>}
+import { useState } from "react";
+import { Alert, Linking, Text, View } from "react-native";
+import { Link, router } from "expo-router";
+import { Button, Card, Field, Screen } from "@/components/ui/nalum";
+import { authApi } from "@/lib/api";
+import { useAuthStore } from "@/stores/auth-store";
+export default function SignIn() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [busy, setBusy] = useState(false);
+  const submit = async () => {
+    setBusy(true);
+    try {
+      const user = await authApi.login(email, password);
+      useAuthStore.getState().setUser(user);
+      router.replace(
+        !user.emailVerified
+          ? "/verify"
+          : !user.profileCompleted
+            ? "/onboarding"
+            : "/directory",
+      );
+    } catch (e) {
+      Alert.alert(
+        "Sign in failed",
+        e instanceof Error ? e.message : "Try again.",
+      );
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <Screen>
+      <View className="mb-10">
+        <Text className="text-4xl font-bold text-foreground">Nalum</Text>
+        <Text className="mt-2 text-lg text-muted">
+          The NSUT alumni network.
+        </Text>
+      </View>
+      <Card>
+        <Text className="mb-5 text-2xl font-semibold text-foreground">
+          Welcome back
+        </Text>
+        <View className="gap-3">
+          <Field
+            value={email}
+            onChangeText={setEmail}
+            placeholder="Email address"
+            keyboardType="email-address"
+          />
+          <Field
+            value={password}
+            onChangeText={setPassword}
+            placeholder="Password"
+            secureTextEntry
+          />
+          <Button onPress={submit} disabled={busy}>
+            {busy ? "Signing in…" : "Sign in"}
+          </Button>
+          <Button
+            variant="secondary"
+            onPress={() => Linking.openURL(authApi.googleUrl)}
+          >
+            Continue with Google
+          </Button>
+        </View>
+      </Card>
+      <Text className="mt-6 text-center text-muted">
+        New to Nalum?{" "}
+        <Link href="/sign-up" className="font-semibold text-maroon">
+          Create an account
+        </Link>
+      </Text>
+    </Screen>
+  );
+}

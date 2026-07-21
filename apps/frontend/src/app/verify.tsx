@@ -1,2 +1,58 @@
-import { useState } from 'react'; import { Alert, Text, View } from 'react-native'; import { router } from 'expo-router'; import { Button, Card, Field, Screen } from '@/components/ui/nalum'; import { authApi } from '@/lib/api'; import { useAuthStore } from '@/stores/auth-store';
-export default function Verify(){const[otp,setOtp]=useState('');const send=async()=>{try{await authApi.sendOtp();Alert.alert('Code sent','Check your email for the six digit code.')}catch(e){Alert.alert('Unable to send',e instanceof Error?e.message:'Try again.')}};const verify=async()=>{try{await authApi.verifyOtp(otp);const current=useAuthStore.getState().user;if(current)useAuthStore.getState().setUser({...current,emailVerified:true});router.replace('/onboarding');}catch(e){Alert.alert('Invalid code',e instanceof Error?e.message:'Try again.')}};return <Screen><Text className="mb-3 text-3xl font-bold text-foreground">Verify your email</Text><Text className="mb-6 text-muted">Use the code sent to your email address.</Text><Card><View className="gap-3"><Field value={otp} onChangeText={setOtp} placeholder="Six digit code" keyboardType="numeric"/><Button onPress={verify}>Verify email</Button><Button variant="secondary" onPress={send}>Send a new code</Button></View></Card></Screen>}
+import { useState } from "react";
+import { Alert, Text, View } from "react-native";
+import { router } from "expo-router";
+import { Button, Card, Field, Screen } from "@/components/ui/nalum";
+import { authApi } from "@/lib/api";
+import { useAuthStore } from "@/stores/auth-store";
+export default function Verify() {
+  const [otp, setOtp] = useState("");
+  const send = async () => {
+    try {
+      await authApi.sendOtp();
+      Alert.alert("Code sent", "Check your email for the six digit code.");
+    } catch (e) {
+      Alert.alert(
+        "Unable to send",
+        e instanceof Error ? e.message : "Try again.",
+      );
+    }
+  };
+  const verify = async () => {
+    try {
+      await authApi.verifyOtp(otp);
+      const current = useAuthStore.getState().user;
+      if (current)
+        useAuthStore.getState().setUser({ ...current, emailVerified: true });
+      router.replace("/onboarding");
+    } catch (e) {
+      Alert.alert(
+        "Invalid code",
+        e instanceof Error ? e.message : "Try again.",
+      );
+    }
+  };
+  return (
+    <Screen>
+      <Text className="mb-3 text-3xl font-bold text-foreground">
+        Verify your email
+      </Text>
+      <Text className="mb-6 text-muted">
+        Use the code sent to your email address.
+      </Text>
+      <Card>
+        <View className="gap-3">
+          <Field
+            value={otp}
+            onChangeText={setOtp}
+            placeholder="Six digit code"
+            keyboardType="numeric"
+          />
+          <Button onPress={verify}>Verify email</Button>
+          <Button variant="secondary" onPress={send}>
+            Send a new code
+          </Button>
+        </View>
+      </Card>
+    </Screen>
+  );
+}

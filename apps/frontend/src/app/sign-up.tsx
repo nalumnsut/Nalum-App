@@ -1,2 +1,85 @@
-import { useState } from 'react'; import { Alert, Text, View } from 'react-native'; import { Link, router } from 'expo-router'; import { Button, Card, Field, Screen } from '@/components/ui/nalum'; import { authApi, type Role } from '@/lib/api'; import { useAuthStore } from '@/stores/auth-store';
-export default function SignUp(){const[firstName,setFirst]=useState('');const[lastName,setLast]=useState('');const[email,setEmail]=useState('');const[password,setPassword]=useState('');const[role,setRole]=useState<Role>('STUDENT');const submit=async()=>{try{const user=await authApi.register({firstName,lastName,email,password,role});useAuthStore.getState().setUser(user);router.replace('/verify');}catch(e){Alert.alert('Could not create account',e instanceof Error?e.message:'Try again.')}};return <Screen><Text className="mb-6 text-3xl font-bold text-foreground">Join Nalum</Text><Card><View className="gap-3"><Field value={firstName} onChangeText={setFirst} placeholder="First name"/><Field value={lastName} onChangeText={setLast} placeholder="Last name"/><Field value={email} onChangeText={setEmail} placeholder="Email address" keyboardType="email-address"/><Field value={password} onChangeText={setPassword} placeholder="Password (6+ characters)" secureTextEntry/><View className="flex-row gap-2"><Button variant={role==='STUDENT'?'primary':'secondary'} onPress={()=>setRole('STUDENT')}>Student</Button><Button variant={role==='ALUMNI'?'primary':'secondary'} onPress={()=>setRole('ALUMNI')}>Alumni</Button></View><Button onPress={submit}>Create account</Button></View></Card><Text className="mt-6 text-center text-muted">Already have an account? <Link href="/sign-in" className="font-semibold text-maroon">Sign in</Link></Text></Screen>}
+import { useState } from "react";
+import { Alert, Text, View } from "react-native";
+import { Link, router } from "expo-router";
+import { Button, Card, Field, Screen } from "@/components/ui/nalum";
+import { authApi, type Role } from "@/lib/api";
+import { useAuthStore } from "@/stores/auth-store";
+export default function SignUp() {
+  const [firstName, setFirst] = useState("");
+  const [lastName, setLast] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [role, setRole] = useState<Role>("STUDENT");
+  const submit = async () => {
+    try {
+      const user = await authApi.register({
+        firstName,
+        lastName,
+        email,
+        password,
+        role,
+      });
+      useAuthStore.getState().setUser(user);
+      router.replace("/verify");
+    } catch (e) {
+      Alert.alert(
+        "Could not create account",
+        e instanceof Error ? e.message : "Try again.",
+      );
+    }
+  };
+  return (
+    <Screen>
+      <Text className="mb-6 text-3xl font-bold text-foreground">
+        Join Nalum
+      </Text>
+      <Card>
+        <View className="gap-3">
+          <Field
+            value={firstName}
+            onChangeText={setFirst}
+            placeholder="First name"
+          />
+          <Field
+            value={lastName}
+            onChangeText={setLast}
+            placeholder="Last name"
+          />
+          <Field
+            value={email}
+            onChangeText={setEmail}
+            placeholder="Email address"
+            keyboardType="email-address"
+          />
+          <Field
+            value={password}
+            onChangeText={setPassword}
+            placeholder="Password (6+ characters)"
+            secureTextEntry
+          />
+          <View className="flex-row gap-2">
+            <Button
+              variant={role === "STUDENT" ? "primary" : "secondary"}
+              onPress={() => setRole("STUDENT")}
+            >
+              Student
+            </Button>
+            <Button
+              variant={role === "ALUMNI" ? "primary" : "secondary"}
+              onPress={() => setRole("ALUMNI")}
+            >
+              Alumni
+            </Button>
+          </View>
+          <Button onPress={submit}>Create account</Button>
+        </View>
+      </Card>
+      <Text className="mt-6 text-center text-muted">
+        Already have an account?{" "}
+        <Link href="/sign-in" className="font-semibold text-maroon">
+          Sign in
+        </Link>
+      </Text>
+    </Screen>
+  );
+}
