@@ -9,13 +9,14 @@
 
 import type { FastifyPluginAsync } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
+import { z } from "zod/v4";
 import { protect } from "../../middlewares/auth.middleware";
 import oauthPlugin from "../../plugins/oauth.plugin";
+import { EmailService } from "../email";
 import { AuthController } from "./auth.controller";
 import AuthRepository from "./auth.repository";
 import * as schema from "./auth.schema";
 import { AuthService } from "./auth.service";
-import { EmailService } from "../email";
 
 const authRoutes: FastifyPluginAsync = async (fastify) => {
 	const repository = new AuthRepository(fastify.prisma);
@@ -157,10 +158,10 @@ const authRoutes: FastifyPluginAsync = async (fastify) => {
 			schema: {
 				summary: "Complete Google sign-in",
 				description:
-					"Handles the Google OAuth callback, links or creates the account, and returns a session.",
+					"Handles the Google OAuth callback, creates a cookie-backed session, and redirects to the web app.",
 				tags: ["Auth", "Google"],
 				response: {
-					200: schema.authResponseSchema,
+					302: z.string().describe("Redirect response to the web app."),
 				},
 			},
 		},

@@ -31,7 +31,6 @@ const envSchema = z.object({
   BREVO_SMTP_PASS: z.string().optional(),
 	BREVO_FROM_EMAIL: z.email().optional(),
   BREVO_FROM_NAME: z.string().default("NSUT ALUMNI ASSOCIATION"),
-  EMAIL_MAX_RETRIES: z.coerce.number().default(3),
   EMAIL_QUEUE_NAME: z.string(),
   S3_ENDPOINT: z.url().default("http://localhost:9000"),
 	S3_REGION: z.string().default("us-east-1"),

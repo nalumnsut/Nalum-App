@@ -7,7 +7,7 @@ let redisConnection: IORedis | null = null;
 export function getRedisConnection(): IORedis {
 	if (!redisConnection) {
 		redisConnection = new IORedis(env.REDIS_URL, {
-			maxRetriesPerRequest: env.EMAIL_MAX_RETRIES, // BullMQ requirement
+			maxRetriesPerRequest: null, // BullMQ requirement
 		});
 	}
 	return redisConnection;

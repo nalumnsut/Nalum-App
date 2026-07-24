@@ -28,7 +28,7 @@ export class MailSender {
 		text: string;
 		html: string;
 	}) {
-		if (env.NODE_ENV !== "production") {
+		if (env.NODE_ENV === "development") {
 			const otpMatch = input.text.match(/\b\d{6}\b/);
 			const otp = otpMatch ? otpMatch[0] : "";
 			console.log(

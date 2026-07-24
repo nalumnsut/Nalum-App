@@ -5,6 +5,7 @@ include:
 
 services:
   backend:
+    image: nalumv2-backend:local
     build:
       context: .
       dockerfile: docker/backend.Dockerfile
@@ -13,6 +14,9 @@ services:
     env_file:
       - ./apps/backend/.env
     environment:
+      # Keep the runtime mode owned by the root Compose environment, rather
+      # than the app-specific env file.
+      NODE_ENV: ${NODE_ENV:-development}
       REDIS_URL: redis://redis:6379
       S3_ENDPOINT: http://minio:9000
       S3_REGION: ${S3_REGION:-us-east-1}
@@ -37,6 +41,7 @@ services:
     env_file:
       - ./apps/backend/.env
     environment:
+      NODE_ENV: ${NODE_ENV:-development}
       CHAT_PORT: 3001
       REDIS_URL: redis://redis:6379
     ports:
@@ -48,13 +53,12 @@ services:
         condition: service_healthy
 
   email-worker:
-    build:
-      context: ./apps/backend
-      dockerfile: DOCKERFILE
+    image: nalumv2-backend:local
     command: ["bun", "run", "email:worker"]
     env_file:
       - ./apps/backend/.env
     environment:
+      NODE_ENV: ${NODE_ENV:-development}
       REDIS_URL: redis://redis:6379
       S3_ENDPOINT: http://minio:9000
       S3_REGION: ${S3_REGION:-us-east-1}

@@ -23,6 +23,7 @@ import {
 import type {
 	LoginBody,
 	RegisterBody,
+	SessionParams,
 	VerifyEmailOtpBody,
 } from "./auth.schema";
 import type { AuthService } from "./auth.service";
@@ -31,7 +32,6 @@ import type {
 	AuthSession,
 	GoogleUserInfo,
 } from "./auth.types";
-import type { SessionParams } from "./auth.schema";
 
 export class AuthController {
 	constructor(private readonly authService: AuthService) {}
@@ -129,13 +129,17 @@ export class AuthController {
 		}
 
 		const profile = (await response.json()) as GoogleUserInfo;
+		const device = this.getDevice(request);
 		const session = await this.authService.loginWithGoogle(
 			profile,
-			this.getDevice(request),
+			device,
 		);
-		this.setDeviceCookie(reply, this.getDevice(request).id);
+		this.setDeviceCookie(reply, device.id);
 		this.setRefreshCookie(reply, session.refreshToken, session.refreshTokenExpiresAt);
-		return reply.redirect(new URL("/auth/callback", env.WEB_APP_URL).toString());
+		return reply.redirect(
+			new URL("/auth/callback", env.WEB_APP_URL).toString(),
+			302,
+		);
 	};
 
 	private async sendAuthSession(

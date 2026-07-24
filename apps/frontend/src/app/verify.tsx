@@ -23,7 +23,7 @@ export default function Verify() {
       const current = useAuthStore.getState().user;
       if (current)
         useAuthStore.getState().setUser({ ...current, emailVerified: true });
-      router.replace("/onboarding");
+      router.replace("/profile");
     } catch (e) {
       Alert.alert(
         "Invalid code",

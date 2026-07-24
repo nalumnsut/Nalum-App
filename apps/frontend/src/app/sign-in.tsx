@@ -3,6 +3,7 @@ import { Alert, Linking, Text, View } from "react-native";
 import { Link, router } from "expo-router";
 import { Button, Card, Field, Screen } from "@/components/ui/nalum";
 import { authApi } from "@/lib/api";
+import { getAuthRoute } from "@/lib/auth-navigation";
 import { useAuthStore } from "@/stores/auth-store";
 export default function SignIn() {
   const [email, setEmail] = useState("");
@@ -13,13 +14,7 @@ export default function SignIn() {
     try {
       const user = await authApi.login(email, password);
       useAuthStore.getState().setUser(user);
-      router.replace(
-        !user.emailVerified
-          ? "/verify"
-          : !user.profileCompleted
-            ? "/onboarding"
-            : "/directory",
-      );
+      router.replace(getAuthRoute(user));
     } catch (e) {
       Alert.alert(
         "Sign in failed",

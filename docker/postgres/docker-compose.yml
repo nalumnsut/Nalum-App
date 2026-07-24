@@ -29,12 +29,12 @@ services:
     image: dpage/pgadmin4:latest
     container_name: nalum-pgadmin
     restart: unless-stopped
+    profiles: ["development"]
 
     env_file:
       - .env
 
     environment:
-      environment:
       PGADMIN_DEFAULT_EMAIL: admin@nsut.ac.in
       PGADMIN_DEFAULT_PASSWORD: admin123
 

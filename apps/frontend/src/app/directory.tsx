@@ -41,7 +41,7 @@ export default function Directory() {
           <Text className="text-3xl font-bold text-foreground">Directory</Text>
           <Text className="text-muted">Find the Nalum community</Text>
         </View>
-        <Link href="/profile" className="font-semibold text-maroon">
+        <Link href="/profile/edit" className="font-semibold text-maroon">
           My profile
         </Link>
       </View>
